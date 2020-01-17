@@ -10,13 +10,11 @@ class Config:
 
 
 class developmentConfig(Config):
-    HOSTNAME = '127.0.0.1'
-    PORT = '3306'
-    DATABASE = 'yzl'
-    USERNAME = 'root'
-    PASSWORD = '200010281214'
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://{}:{}@{}:{}/{}'.format(USERNAME, PASSWORD, HOSTNAME, PORT, DATABASE)
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    # mongodb 配置
+    MONGODB_SETTINGS = {
+        'db': 'questionnaire-test',
+        'host': 'mongodb://localhost/questionnaire-test'
+    }
 
 
 class productionConfig(Config):
