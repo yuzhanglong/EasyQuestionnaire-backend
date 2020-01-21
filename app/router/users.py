@@ -33,6 +33,7 @@ def userLogin():
         else:
             return {'status': 'error', 'information': '用户名不存在/未激活或密码错误'}, 403
 
+
 # 邮箱验证
 @users.route('/confirm/<confirmtoken>', methods=['GET'])
 def userConfirm(confirmtoken):
@@ -40,3 +41,15 @@ def userConfirm(confirmtoken):
     if form.confirmToken():
         return "验证成功！"
     return "验证失败!"
+
+
+# token验证
+@users.route('/token', methods=['GET', 'POST'])
+def checkToken():
+    if request.method == 'POST':
+        token = request.json['token']
+        form = confirmForm(token)
+        if form.confirmToken():
+            return {'status': 'success', 'information': 'none', 'token': token}
+        else:
+            return {'status': 'error', 'information': 'none'}, 403

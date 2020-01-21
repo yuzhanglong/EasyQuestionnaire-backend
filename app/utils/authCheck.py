@@ -13,7 +13,6 @@ def generateAuthToken(userId):
 
 # 鉴别token
 def checkAuthToken(token):
-    current_app.logger.error(token)
     serializer = Serializer(current_app.config["SECRET_KEY"])
     try:
         # 把token解码

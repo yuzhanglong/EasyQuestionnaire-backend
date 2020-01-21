@@ -1,4 +1,3 @@
-from app.extensions import db
 from app.models.user import User
 from app.utils.emailtools import emailFormCheck, sendEmail
 from app.utils.authCheck import generateAuthToken, checkAuthToken
@@ -39,9 +38,8 @@ class loginForm:
     # 检验用户
     def checkUser(self):
         user = User.objects.filter(userName=self.userName, userPassword=self.userPassword).first()
-        if not user.userIsActivate:
-            return False
-        return user
+        return user and user.userIsActivate
+
 
     # 制造token
     def makeUserToken(self):
