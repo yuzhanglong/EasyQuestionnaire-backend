@@ -36,3 +36,13 @@ def getQuesionNaireDataByFlag():
         if data is not None:
             return {'status': 'success', 'information': data}
         return {'status': 'error', 'information': "noCorrectQuestionnaire"}, 404
+
+
+@questionnaire.route('/delete', methods=['POST'])
+def deleteQuestionnaireData():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        QuestionnaireForm(data['userName']).deleteQuestionnaire(data['flag'])
+        return {'status': 'success', 'information': 'deletesuccessful'}
+    return {'status': 'error', 'information': "deleteFailed"}, 404

@@ -29,5 +29,10 @@ class QuestionnaireForm:
 
     # 拿到单个问卷数据(编辑、数据处理可用)
     def getQuesionNaireByFlag(self, flag):
-        questionnaire = Questionnaire.objects.filter(questionnaireFlag=flag, questionnaireUserId=self.uid).first()
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
         return questionnaire
+
+    # 删除问卷数据
+    def deleteQuestionnaire(self, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        questionnaire.delete()
