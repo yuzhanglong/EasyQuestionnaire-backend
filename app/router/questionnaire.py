@@ -25,3 +25,14 @@ def getQuestionnaireData():
     if isPass:
         data = QuestionnaireForm(data['userName']).getQuestionnaireData()
         return {'status': 'success', 'information': data}
+
+
+@questionnaire.route('/get_data_by_flag', methods=['POST'])
+def getQuesionNaireDataByFlag():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        data = QuestionnaireForm(data['userName']).getQuesionNaireByFlag(data['flag'])
+        if data is not None:
+            return {'status': 'success', 'information': data}
+        return {'status': 'error', 'information': "noCorrectQuestionnaire"}, 404

@@ -22,6 +22,12 @@ class QuestionnaireForm:
                                       questionnaireRenewTime=nowTime)
         questionnaire.save()
 
+    # 拿到所有问卷数据
     def getQuestionnaireData(self):
         allQuestionnaireData = Questionnaire.objects.filter(questionnaireUserId=self.uid)
         return allQuestionnaireData
+
+    # 拿到单个问卷数据(编辑、数据处理可用)
+    def getQuesionNaireByFlag(self, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=flag, questionnaireUserId=self.uid).first()
+        return questionnaire
