@@ -46,3 +46,13 @@ def deleteQuestionnaireData():
         QuestionnaireForm(data['userName']).deleteQuestionnaire(data['flag'])
         return {'status': 'success', 'information': 'deletesuccessful'}
     return {'status': 'error', 'information': "deleteFailed"}, 404
+
+
+@questionnaire.route('/spread', methods=['POST'])
+def submitQuestionnaireSpreadData():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        QuestionnaireForm(data['userName']).submitSpreadData(data['dataDict'], data['flag'])
+        return {'status': 'success', 'information': 'success'}
+    return {'status': 'error', 'information': "Failed"}, 404

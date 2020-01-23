@@ -36,3 +36,10 @@ class QuestionnaireForm:
     def deleteQuestionnaire(self, flag):
         questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
         questionnaire.delete()
+
+    def submitSpreadData(self, dataDict, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        keys = dataDict.keys()
+        for index in keys:
+            questionnaire[index] = dataDict[index]
+        questionnaire.save()

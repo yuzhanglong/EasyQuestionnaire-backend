@@ -1,13 +1,14 @@
 from app.extensions import db
+import time
 
 
 class Equipment(db.EmbeddedDocument):
     # 访问过的设备   Array
-    equipmentData = db.ListField()
+    equipmentData = db.ListField(default=[])
 
 
 class Requestip(db.EmbeddedDocument):
-    equipmentData = db.StringField()
+    equipmentData = db.StringField(default=[])
 
 
 class Questionnaire(db.Document):
@@ -15,17 +16,34 @@ class Questionnaire(db.Document):
     questionnaireUserId = db.StringField()
     # 问卷唯一标识
     questionnaireFlag = db.StringField()
+
+    '''全局开关'''
+    # 问卷运行状态
+    questionnaireCondition = db.BooleanField(default=False)
     # 问卷是否加密
-    questionnaireIsSecret = db.BooleanField()
+    questionnaireIsSecret = db.BooleanField(default=False)
+    # 微信限制
+    questionnaireWechatControl = db.BooleanField(default=False)
+    # ip限制
+    questionnaireIPControl = db.BooleanField(default=False)
+    # 设备限制
+    questionnaireEquipmentControl = db.BooleanField(default=False)
+    # 截止限制
+    questionnaireDeadlineControl = db.BooleanField(default=False)
+
+    '''全局设置'''
     # 问卷密码
-    questionnaireSecretKey = db.StringField()
+    questionnaireSecretKey = db.StringField(default="null")
     # 问卷截止时间
-    questionnaireDeadline = db.DateTimeField()
+    questionnaireDeadline = db.StringField(default=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     # 问卷最后一次更新时间
-    questionnaireRenewTime = db.DateTimeField()
+    questionnaireRenewTime = db.StringField(default=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+
+    '''答题次数'''
     # 问卷访问过的设备
     questionnaireEquipment = db.EmbeddedDocumentField(Equipment)
     # 问卷访问过的ip
-    questionnaireRequestip = db.EmbeddedDocumentField(Requestip)
-    # 问卷基本信息
+    questionnaireIP = db.EmbeddedDocumentField(Requestip)
+
+    '''基本信息'''
     questionnaireBasicData = db.DictField()
