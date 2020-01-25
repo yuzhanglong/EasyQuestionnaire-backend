@@ -29,3 +29,11 @@ def checkSecretKey(flag):
     if isPass:
         return {'status': 'success', 'information': 'none'}
     return {'status': 'success', 'information': 'none'}, 403
+
+
+@complete.route('/submit_data/<flag>', methods=['POST'])
+def subMitComplete(flag):
+    formConditonCode = CompleteForm(flag).subMitComplete(request.json, request.remote_addr)
+    if formConditonCode:
+        return {'status': 'success', 'information': formConditonCode}
+    return {'status': 'failed', 'information': formConditonCode}, 403

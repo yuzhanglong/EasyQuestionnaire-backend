@@ -2,15 +2,6 @@ from app.extensions import db
 import time
 
 
-class Equipment(db.EmbeddedDocument):
-    # 访问过的设备   Array
-    equipmentData = db.ListField(default=[])
-
-
-class Requestip(db.EmbeddedDocument):
-    equipmentData = db.StringField(default=[])
-
-
 class Questionnaire(db.Document):
     # 发布者的唯一标识
     questionnaireUserId = db.StringField()
@@ -40,10 +31,11 @@ class Questionnaire(db.Document):
     questionnaireRenewTime = db.StringField(default=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
     '''答题次数'''
-    # 问卷访问过的设备
-    questionnaireEquipment = db.EmbeddedDocumentField(Equipment)
     # 问卷访问过的ip
-    questionnaireIP = db.EmbeddedDocumentField(Requestip)
+    questionnaireIP = db.ListField(default=[])
 
     '''基本信息'''
     questionnaireBasicData = db.DictField()
+
+    '''收到的答卷'''
+    questionnaireCompleteResult = db.ListField(default=[])
