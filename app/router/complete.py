@@ -21,3 +21,11 @@ def getProblems(flag):
     form = CompleteForm(flag).getProblems()
     if form:
         return {'status': 'success', 'information': form}
+
+
+@complete.route('/check_key/<flag>', methods=['POST'])
+def checkSecretKey(flag):
+    isPass = CompleteForm(flag).checkSecretKey(request.json['key'])
+    if isPass:
+        return {'status': 'success', 'information': 'none'}
+    return {'status': 'success', 'information': 'none'}, 403
