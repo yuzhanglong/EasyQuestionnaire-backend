@@ -1,5 +1,5 @@
 from app.models.questionnaire import Questionnaire
-
+from app.utils.placeFinder import getPlace
 
 class CompleteForm:
     # 初始化 传入flag
@@ -32,6 +32,8 @@ class CompleteForm:
         # ip放入ip池里面
         self.questionnare.questionnaireIP.append(ip)
         # 导入填报数据
-        self.questionnare.questionnaireCompleteResult.append(completeData)
+        data = completeData
+        data['ipCondition'] = getPlace(ip)
+        self.questionnare.questionnaireCompleteResult.append(data)
         self.questionnare.save()
         return 1

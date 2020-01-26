@@ -26,3 +26,4 @@ def checkAuthToken(token):
         user.userIsActivate = True
         user.save()
     return user
+
