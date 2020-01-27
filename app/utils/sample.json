@@ -1,0 +1,106 @@
+{
+    tag: NumberLong("1580027613298"),
+    globalSetting: {
+        required: false
+    },
+    common: {
+        type: "singleSelect",
+        title: "您的性别？",
+        options: [
+            {
+                value: "男"
+            },
+            {
+                value: "女"
+            }
+        ]
+    }
+}
+
+[
+    {
+        completeData: [
+            [
+                NumberInt("0")
+            ],
+            [
+                NumberInt("2")
+            ],
+            [
+                NumberInt("0"),
+                NumberInt("1"),
+                NumberInt("2")
+            ]
+        ],
+        submitTime: NumberLong("1580027796557"),
+        ipCondition: {
+            ip: "192.168.0.129",
+            pro: "",
+            proCode: "999999",
+            city: "",
+            cityCode: "0",
+            region: "",
+            regionCode: "0",
+            addr: " 局域网",
+            regionNames: "",
+            err: "noprovince",
+            code: NumberInt("1")
+        }
+    },
+    {
+        completeData: [
+            [
+                NumberInt("1")
+            ],
+            [
+                NumberInt("7")
+            ],
+            [
+                NumberInt("3"),
+                NumberInt("2"),
+                NumberInt("0")
+            ]
+        ],
+        submitTime: NumberLong("1580027812469"),
+        ipCondition: {
+            ip: "192.168.0.129",
+            pro: "",
+            proCode: "999999",
+            city: "",
+            cityCode: "0",
+            region: "",
+            regionCode: "0",
+            addr: " 局域网",
+            regionNames: "",
+            err: "noprovince",
+            code: NumberInt("1")
+        }
+    },
+    {
+        completeData: [
+            [
+                NumberInt("1")
+            ],
+            [
+                NumberInt("7")
+            ],
+            [
+                NumberInt("0")
+            ]
+        ],
+        submitTime: NumberLong("1580028482305"),
+        ipCondition: {
+            ip: "192.168.0.129",
+            pro: "",
+            proCode: "999999",
+            city: "",
+            cityCode: "0",
+            region: "",
+            regionCode: "0",
+            addr: " 局域网",
+            regionNames: "",
+            err: "noprovince",
+            code: NumberInt("1")
+        }
+    }
+]

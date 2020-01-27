@@ -1,4 +1,6 @@
 from flask import current_app
+
+
 # 数据计算
 
 # 返回问卷地区的个数
@@ -23,7 +25,8 @@ def getProblemCalculation(problem, problemIndex, completes):
         'data': []
     }
     # 单选题和多选题
-    if result['type'] == 'singleSelect' or result['type'] == 'multiplySelect':
+    myType = result['type']
+    if myType == 'singleSelect' or myType == 'multiplySelect' or myType == 'dropDown':
         for index, option in enumerate(problem['common']['options']):
             op = {
                 'title': option['value'],
@@ -32,11 +35,14 @@ def getProblemCalculation(problem, problemIndex, completes):
             if len(completes) is 0:
                 break
             for complete in completes:
-                for t in complete['completeData'][problemIndex]:
-                    if t == index:
-                        op['numbers'] += 1
+                try:
+                    for t in complete['completeData'][problemIndex]:
+                        if t == index:
+                            op['numbers'] += 1
+                except Exception as e:
+                    current_app.logger.error(e)
             result['data'].append(op)
-    if result['type'] == 'blankFill':
+    if myType == 'blankFill':
         if len(completes) is 0:
             return result
         cnt = 1
@@ -51,7 +57,6 @@ def getProblemCalculation(problem, problemIndex, completes):
             else:
                 cnt += 1
                 result['data'].append(op)
-
     return result
 
 
