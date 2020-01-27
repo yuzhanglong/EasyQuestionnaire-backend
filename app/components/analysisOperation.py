@@ -1,6 +1,7 @@
 from app.models.questionnaire import Questionnaire
 from app.utils.authCheck import checkAuthToken
-from app.utils.dataCalculation import getPlaces
+from app.utils.dataCalculation import getPlaces, getAllProblemCalculation
+
 
 class AnalysisForm:
     def __init__(self, flag):
@@ -23,7 +24,6 @@ class AnalysisForm:
             'renewTime': commonData.questionnaireRenewTime,
             'title': basicData['basicInfo']['title'],
             'totalComplete': len(commonData.questionnaireCompleteResult),
-            'problems': basicData['problems'],
-            'complete': commonData.questionnaireCompleteResult,
+            'completes': getAllProblemCalculation(basicData['problems'], commonData.questionnaireCompleteResult),
             'placeCondition': getPlaces(commonData.questionnaireCompleteResult),
         }
