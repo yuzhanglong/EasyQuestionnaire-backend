@@ -13,12 +13,17 @@ class QuestionnaireForm:
     def submitBasicData(self, **kwargs):
         flag = kwargs['questionnaireFlag']
         older = Questionnaire.objects.filter(questionnaireFlag=flag).first()
-        # 如果已经保存过了 把旧的删除了
         nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        older.questionnaireBasicData = kwargs['questionnaireBasicData']
-        older.questionnaireRenewTime = nowTime
-        older.questionnaireUserId = self.uid
-        older.save()
+        if older:
+            older.questionnaireBasicData = kwargs['questionnaireBasicData']
+            older.questionnaireRenewTime = nowTime
+            older.questionnaireUserId = self.uid
+            older.save()
+        else:
+            questionnaire = Questionnaire(questionnaireUserId=self.uid, questionnaireFlag=flag,
+                                          questionnaireBasicData=kwargs['questionnaireBasicData'],
+                                          questionnaireRenewTime=nowTime)
+            questionnaire.save()
 
     # 拿到所有问卷数据
     def getQuestionnaireData(self):
