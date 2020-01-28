@@ -1,5 +1,7 @@
 from app.models.questionnaire import Questionnaire
 from app.utils.placeFinder import getPlace
+from app.utils.dataCalculation import checkTimeIsDead
+
 
 class CompleteForm:
     # 初始化 传入flag
@@ -9,6 +11,9 @@ class CompleteForm:
 
     def getCondition(self):
         if self.questionnare:
+            if checkTimeIsDead(self.questionnare):
+                self.questionnare.questionnaireCondition = False
+                self.questionnare.save()
             data = {
                 'questionnaireCondition': self.questionnare.questionnaireCondition,
                 'questionnaireDeadline': self.questionnare.questionnaireDeadline,

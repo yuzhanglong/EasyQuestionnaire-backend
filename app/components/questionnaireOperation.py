@@ -1,7 +1,7 @@
 from app.models.user import User
 from app.models.questionnaire import Questionnaire
 import time
-
+from app.utils.dataCalculation import checkTimeIsDead
 
 class QuestionnaireForm:
     def __init__(self, userName):
@@ -28,6 +28,11 @@ class QuestionnaireForm:
     # 拿到所有问卷数据
     def getQuestionnaireData(self):
         allQuestionnaireData = Questionnaire.objects.filter(questionnaireUserId=self.uid)
+        for data in allQuestionnaireData:
+            #有限制并且已经过期了
+            if checkTimeIsDead(data):
+                data.questionnaireCondition = False
+                data.save()
         return allQuestionnaireData
 
     # 拿到单个问卷数据(编辑、数据处理可用)

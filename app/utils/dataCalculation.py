@@ -1,4 +1,5 @@
 from flask import current_app
+import time
 
 
 # 数据计算
@@ -66,3 +67,11 @@ def getAllProblemCalculation(problems, completes):
         p = getProblemCalculation(problem, index, completes)
         result.append(p)
     return result
+
+
+def checkTimeIsDead(questionnaireObj):
+    # sample: 2020-01-27 11:29:18
+    isControl = questionnaireObj.questionnaireDeadlineControl
+    deadLine = questionnaireObj.questionnaireDeadline
+    nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    return isControl and nowTime > deadLine
