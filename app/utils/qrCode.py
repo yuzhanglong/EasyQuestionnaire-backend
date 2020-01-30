@@ -1,5 +1,5 @@
 import qrcode
-import PIL
+from PIL import Image
 import io
 from flask import send_file
 
@@ -14,6 +14,11 @@ def makeQRCode(targetLink):
     qr.add_data(targetLink)
     qr.make(fit=True)
     img = qr.make_image()
+    return imgFile(img)
+
+
+def getQRMakerBgc(pictureId):
+    img = Image.open("app/data/img/QRmakerBackground/poster_bg_" + pictureId + ".png")
     return imgFile(img)
 
 
