@@ -1,11 +1,11 @@
-from app.utils.qrCode import makeQRCode, getQRMakerBgc
+from app.utils.qrCode import makeQRCode, getQRMakerBgc, makeQRCodePost
 from flask import request, Blueprint
 from PIL import Image
 
 utils = Blueprint('utils', __name__, url_prefix='/utils')
 
 
-@utils.route('/qrcode', methods=['GET'])
+@utils.route('/qrcode/get_code', methods=['GET'])
 def getQuestionnaireQRCode():
     baseURL = 'http://192.168.0.129:8080/complete/'
     flag = request.args.get('flag')
@@ -15,6 +15,12 @@ def getQuestionnaireQRCode():
     return makeQRCode(link)
 
 
-@utils.route('/qr_pictures/<pictureId>', methods=['GET'])
+@utils.route('/qrcode/qr_pictures/<pictureId>', methods=['GET'])
 def getMakerBgc(pictureId):
     return getQRMakerBgc(pictureId)
+
+
+@utils.route('/qrcode/get_post', methods=['GET'])
+def getPost():
+    data = request.args
+    return makeQRCodePost(data['bgcid'], data['styletype'], data['flag'], data['title'])
