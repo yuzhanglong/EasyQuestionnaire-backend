@@ -5,7 +5,7 @@
 
 #### 未来目标（优先级自上而下）：
 ##### :heavy_check_mark: 二维码分享功能
-##### :pushpin:二维码海报制作功能
+##### :heavy_check_mark: 二维码海报制作功能
 ##### :pushpin:添加评价题 nps题等题型
 ##### :pushpin:部分页面的样式调整
 ##### :pushpin:qq 微信分享功能
