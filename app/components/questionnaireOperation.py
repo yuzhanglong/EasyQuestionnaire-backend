@@ -10,23 +10,16 @@ class QuestionnaireForm:
         self.user = User.objects.filter(userName=self.owner).first()
         self.uid = str(self.user.id)
 
-    # 最基本信息的处理 不包括发布的信息
-    def submitBasicData(self, **kwargs):
+    def newQuestionnaire(self, **kwargs):
         flag = kwargs['questionnaireFlag']
-        older = Questionnaire.objects.filter(questionnaireFlag=flag).first()
+        basicData = kwargs['questionnaireBasicData']
         nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        if older:
-            older.questionnaireBasicData = kwargs['questionnaireBasicData']
-            older.questionnaireRenewTime = nowTime
-            older.questionnaireUserId = self.uid
-            older.save()
-        else:
-            questionnaire = Questionnaire(questionnaireUserId=self.uid, questionnaireFlag=flag,
-                                          questionnaireBasicData=kwargs['questionnaireBasicData'],
-                                          questionnaireRenewTime=nowTime)
-            questionnaire.save()
+        newQuestionnaire = Questionnaire(questionnaireUserId=self.uid,
+                                         questionnaireFlag=flag,
+                                         questionnaireBasicData=basicData,
+                                         questionnaireRenewTime=nowTime)
+        newQuestionnaire.save()
 
-    # 拿到所有问卷数据
     def getQuestionnaireData(self):
         allQuestionnaireData = Questionnaire.objects.filter(questionnaireUserId=self.uid)
         for data in allQuestionnaireData:
@@ -36,19 +29,31 @@ class QuestionnaireForm:
                 data.save()
         return allQuestionnaireData
 
-    # 拿到单个问卷数据(编辑、数据处理可用)
-    def getQuesionNaireByFlag(self, flag):
-        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
-        return questionnaire
 
-    # 删除问卷数据
-    def deleteQuestionnaire(self, flag):
-        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
-        questionnaire.delete()
+class EditForm:
+    def __init__(self, flag):
+        self.questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag)).first()
 
-    def submitSpreadData(self, dataDict, flag):
-        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
-        keys = dataDict.keys()
-        for index in keys:
-            questionnaire[index] = dataDict[index]
-        questionnaire.save()
+    def appendOneProblem(self, common, problemId):
+        self.questionnaire.questionnaireBasicData['problems'].append({
+            'common': common,
+            'globalSetting': {
+                'required': False
+            },
+            'problemId': problemId,
+        })
+
+    def deleteOneProblem(self, problemIndex):
+        del self.questionnaire.questionnaireBasicData['problems'][problemIndex]
+
+    def appendOneOption(self, problemIndex, optionData):
+        self.questionnaire.questionnaireBasicData['problems'][problemIndex]['common']['options'].append(optionData)
+
+    def deleteOneOption(self, problemIndex, optionIndex):
+        del self.questionnaire.questionnaireBasicData['problems'][problemIndex]['common']['options'][optionIndex]
+
+    def editProblemBasicInfo(self, basicInfo):
+        self.questionnaire.questionnaireBasicData['basicInfo'] = basicInfo
+
+    def saveEdition(self):
+        self.questionnaire.save()
