@@ -70,14 +70,40 @@ def deleteOneOption():
     return "fail", 404
 
 
-@questionnaire.route('/edit/append_one_option', methods=['POST'])
+@questionnaire.route('/edit/edit_questionniare_basic_info', methods=['POST'])
+def editQuestionnaireBasicInfo():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        editConfig = data['editConfig']
+        form = EditForm(data['questionnaireFlag'])
+        form.editQuestionnaireBasicInfo(editConfig['basicInfo'])
+        form.saveEdition()
+        return "success"
+    return "fail", 404
+
+
+@questionnaire.route('/edit/edit_problem_basic_info', methods=['POST'])
 def editProblemBasicInfo():
     data = request.json
     isPass = confirmForm(data['token']).confirmToken()
     if isPass:
         editConfig = data['editConfig']
         form = EditForm(data['questionnaireFlag'])
-        form.editProblemBasicInfo(editConfig['basicInfo'])
+        form.editProblemBasicInfo(editConfig['problemIndex'], editConfig['title'], editConfig['globalSetting'])
+        form.saveEdition()
+        return "success"
+    return "fail", 404
+
+
+@questionnaire.route('/edit/edit_option_value', methods=['POST'])
+def editOptionValue():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        editConfig = data['editConfig']
+        form = EditForm(data['questionnaireFlag'])
+        form.editOptionValue(editConfig['problemIndex'], editConfig['optionIndex'], editConfig['value'])
         form.saveEdition()
         return "success"
     return "fail", 404
@@ -90,6 +116,7 @@ def getQuestionnaireData():
     if isPass:
         data = QuestionnaireForm(data['userName']).getQuestionnaireData()
         return {'status': 'success', 'information': data}
+
 #
 #
 # @questionnaire.route('/get_data_by_flag', methods=['POST'])
