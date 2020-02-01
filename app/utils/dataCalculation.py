@@ -23,7 +23,7 @@ def getProblemCalculation(problem, problemIndex, completes):
     result = {
         'type': problem['common']['type'],
         'title': problem['common']['title'],
-        'data': []
+        'static': []
     }
     # 单选题和多选题
     myType = result['type']
@@ -42,7 +42,7 @@ def getProblemCalculation(problem, problemIndex, completes):
                             op['numbers'] += 1
                 except Exception as e:
                     current_app.logger.error(e)
-            result['data'].append(op)
+            result['static'].append(op)
     if myType == 'blankFill':
         if len(completes) is 0:
             return result
@@ -57,7 +57,7 @@ def getProblemCalculation(problem, problemIndex, completes):
                 current_app.logger.error(e)
             else:
                 cnt += 1
-                result['data'].append(op)
+                result['static'].append(op)
     return result
 
 

@@ -34,7 +34,7 @@ def makeQRCode(targetLink):
 
 # 获得二维码图片背景
 def getQRMakerBgc(pictureId):
-    img = Image.open("app/data/img/QRmakerBackground/poster_bg_" + pictureId + ".png")
+    img = Image.open("app/static/img/QRmakerBackground/poster_bg_" + pictureId + ".png")
     return switchPILImg(img)
 
 
@@ -54,10 +54,10 @@ def makeQRCodePost(backGroundId, styleType, problemFlag, title):
     qrImg = qrInit(targetLink)
     qrImg = qrImg.resize((110, 110))
     # 背景图片
-    backGroundImg = Image.open("app/data/img/QRmakerBackground/poster_bg_" + str(backGroundId) + ".png")
+    backGroundImg = Image.open("app/static/img/QRmakerBackground/poster_bg_" + str(backGroundId) + ".png")
     backGroundImg = backGroundImg.resize((375, 812))
     backGroundImg.paste(qrImg, targetStyle['qrPlaces'])
     draw = ImageDraw.Draw(backGroundImg)
-    font = ImageFont.truetype("app/data/font/msyh.ttf", size=30)
+    font = ImageFont.truetype("app/static/font/msyh.ttf", size=30)
     draw.text(xy=targetStyle['text'], text=title, font=font)
     return switchPILImg(backGroundImg)
