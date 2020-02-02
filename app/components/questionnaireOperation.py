@@ -29,6 +29,23 @@ class QuestionnaireForm:
                 data.save()
         return allQuestionnaireData
 
+    # 拿到单个问卷数据(编辑、数据处理可用)
+    def getQuesionNaireByFlag(self, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        return questionnaire
+
+    # 删除问卷数据
+    def deleteQuestionnaire(self, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        questionnaire.delete()
+
+    def submitSpreadData(self, dataDict, flag):
+        questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        keys = dataDict.keys()
+        for index in keys:
+            questionnaire[index] = dataDict[index]
+        questionnaire.save()
+
 
 class EditForm:
     def __init__(self, flag):
@@ -48,6 +65,8 @@ class EditForm:
 
     def deleteOneProblem(self, problemIndex):
         del self.questionnaire.questionnaireBasicData['problems'][problemIndex]
+        for complete in self.questionnaire.questionnaireCompleteResult:
+            del complete['completeData'][problemIndex]
 
     def editProblemBasicInfo(self, problemIndex, title, globalSetting):
         if title != "None":
@@ -60,6 +79,16 @@ class EditForm:
 
     def deleteOneOption(self, problemIndex, optionIndex):
         del self.questionnaire.questionnaireBasicData['problems'][problemIndex]['common']['options'][optionIndex]
+        # python 当中 for x in y 循环语句的x是y列表中元素的副本，所以对于x的修改不会影响到y列表
+        completes = self.questionnaire.questionnaireCompleteResult
+        for complete in completes:
+            for resolution in complete['completeData'][problemIndex]['resolution']:
+                if int(resolution) == optionIndex:
+                    complete['completeData'][problemIndex]['resolution'].remove(resolution)
+                elif int(resolution) > optionIndex:
+                    index = complete['completeData'][problemIndex]['resolution'].index(resolution)
+                    complete['completeData'][problemIndex]['resolution'][index] -= 1
+        self.questionnaire.questionnaireCompleteResult = completes
 
     def editOptionValue(self, problemIndex, optionIndex, value):
         self.questionnaire.questionnaireBasicData['problems'][problemIndex]['common']['options'][optionIndex][

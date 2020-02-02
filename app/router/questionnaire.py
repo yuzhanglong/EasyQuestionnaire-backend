@@ -117,34 +117,33 @@ def getQuestionnaireData():
         data = QuestionnaireForm(data['userName']).getQuestionnaireData()
         return {'status': 'success', 'information': data}
 
-#
-#
-# @questionnaire.route('/get_data_by_flag', methods=['POST'])
-# def getQuesionNaireDataByFlag():
-#     data = request.json
-#     isPass = confirmForm(data['token']).confirmToken()
-#     if isPass:
-#         data = QuestionnaireForm(data['userName']).getQuesionNaireByFlag(data['flag'])
-#         if data is not None:
-#             return {'status': 'success', 'information': data}
-#         return {'status': 'error', 'information': "noCorrectQuestionnaire"}, 404
-#
-#
-# @questionnaire.route('/delete', methods=['POST'])
-# def deleteQuestionnaireData():
-#     data = request.json
-#     isPass = confirmForm(data['token']).confirmToken()
-#     if isPass:
-#         QuestionnaireForm(data['userName']).deleteQuestionnaire(data['flag'])
-#         return {'status': 'success', 'information': 'deletesuccessful'}
-#     return {'status': 'error', 'information': "deleteFailed"}, 404
-#
-#
-# @questionnaire.route('/spread', methods=['POST'])
-# def submitQuestionnaireSpreadData():
-#     data = request.json
-#     isPass = confirmForm(data['token']).confirmToken()
-#     if isPass:
-#         QuestionnaireForm(data['userName']).submitSpreadData(data['dataDict'], data['flag'])
-#         return {'status': 'success', 'information': 'success'}
-#     return {'status': 'error', 'information': "Failed"}, 404
+
+@questionnaire.route('/get_data_by_flag', methods=['POST'])
+def getQuesionNaireDataByFlag():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        data = QuestionnaireForm(data['userName']).getQuesionNaireByFlag(data['flag'])
+        if data is not None:
+            return {'status': 'success', 'information': data}
+        return {'status': 'error', 'information': "noCorrectQuestionnaire"}, 404
+
+
+@questionnaire.route('/delete', methods=['POST'])
+def deleteQuestionnaireData():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        QuestionnaireForm(data['userName']).deleteQuestionnaire(data['flag'])
+        return {'status': 'success', 'information': 'deletesuccessful'}
+    return {'status': 'error', 'information': "deleteFailed"}, 404
+
+
+@questionnaire.route('/spread', methods=['POST'])
+def submitQuestionnaireSpreadData():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        QuestionnaireForm(data['userName']).submitSpreadData(data['dataDict'], data['flag'])
+        return {'status': 'success', 'information': 'success'}
+    return {'status': 'error', 'information': "Failed"}, 404
