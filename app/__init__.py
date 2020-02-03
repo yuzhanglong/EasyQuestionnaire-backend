@@ -3,6 +3,8 @@ from flask import Flask
 from app.config import developmentConfig
 from app.extensions import configExtensions, schedule
 from app.router import configBlueprint
+from app.models.user import User
+import random
 
 
 # app创建函数
@@ -22,8 +24,24 @@ def createApp():
     # 配置蓝本
     configBlueprint(app)
 
+    # 创建模板用户
+    createTemplatesUser(developmentConfig.TEMPALTES_MANAGER)
+
     # 运行任务
     schedule.start()
 
     # 返回app实例对象
     return app
+
+
+def createTemplatesUser(managerName):
+    randomPassWd = str(random.randint(100000, 999999))
+    templateUser = User.objects.filter(userName=managerName).first()
+    if not templateUser:
+        user = User(
+            userName=managerName,
+            userEmail="None",
+            userPassword=randomPassWd,
+            userIsActivate=True
+        )
+        user.save()

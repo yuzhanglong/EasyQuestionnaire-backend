@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask import request
 from app.components.userOperation import confirmForm
-from app.components.questionnaireOperation import QuestionnaireForm, EditForm
+from app.components.questionnaireOperation import QuestionnaireForm, EditForm, TemplatesForm
 
 questionnaire = Blueprint('questionnairepage', __name__, url_prefix='/questionnaire')
 
@@ -147,3 +147,20 @@ def submitQuestionnaireSpreadData():
         QuestionnaireForm(data['userName']).submitSpreadData(data['dataDict'], data['flag'])
         return {'status': 'success', 'information': 'success'}
     return {'status': 'error', 'information': "Failed"}, 404
+
+
+@questionnaire.route('/get_templates', methods=['GET'])
+def getTemplatesData():
+    tempForm = TemplatesForm().getTemplatesData()
+    return {'status': 'success', 'information': tempForm}
+
+
+@questionnaire.route('/copy_templates', methods=['POST'])
+def copyTemplates():
+    data = request.json
+    isPass = confirmForm(data['token']).confirmToken()
+    if isPass:
+        TemplatesForm().copyTemplatesData(data['flag'], data['user'])
+        return {'status': 'success', 'information': data}
+    return {'status': 'error', 'information': "Failed"}, 404
+

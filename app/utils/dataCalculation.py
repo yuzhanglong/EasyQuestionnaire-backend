@@ -75,3 +75,12 @@ def checkTimeIsDead(questionnaireObj):
     deadLine = questionnaireObj.questionnaireDeadline
     nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     return isControl and nowTime > deadLine
+
+
+def switchTimeFromTick(tick):
+    numberTick = int(tick)
+    if len(tick) is not 10:
+        numberTick /= 1000
+    timeArray = time.localtime(numberTick)
+    nowTime = time.strftime("%Y-%m-%d", timeArray)
+    return nowTime

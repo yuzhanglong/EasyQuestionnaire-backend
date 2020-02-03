@@ -1,3 +1,4 @@
+from app.models.user import User
 from app.utils.templateMaker.spiders.wenjuanwang import makeQuestionnaireStructFromWJW, getLinks
 from app.models.questionnaire import Questionnaire
 from app.models.basicInfo import BasicInfo
@@ -5,7 +6,6 @@ import time
 from app.utils.emailtools import sendEmail
 from app.extensions import db
 from flask import current_app
-import app.config as conf
 
 
 class SpiderTag:
@@ -32,6 +32,8 @@ class SpiderTag:
 
 def pushWJWDataToDB():
     with db.app.app_context():
+        name = db.app.config['TEMPALTES_MANAGER']
+        templateUserId = str(User.objects.filter(userName=name).first().id)
         myList = getLinks(2)
         # 计数器
         count = 0
@@ -55,7 +57,7 @@ def pushWJWDataToDB():
                 startTick += 1
                 tick = str(startTick)
                 p["questionnaireFlag"] = tick
-                newQuestionnaire = Questionnaire(questionnaireUserId="templateMaker", questionnaireFlag=tick,
+                newQuestionnaire = Questionnaire(questionnaireUserId=templateUserId, questionnaireFlag=tick,
                                                  questionnaireBasicData=p,
                                                  questionnaireRenewTime=nowTime)
                 successNum += 1
@@ -74,7 +76,7 @@ def pushWJWDataToDB():
 def sendSuccessEmail(successNum, failedNum):
     nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     title = "问卷模板获取成功"
-    to = conf.ADMIN_EMAIL
+    to = db.app.config['ADMIN_EMAIL']
     line1 = "任务完成时间:<br>"
     line2 = str(nowTime) + "<br>"
     line3 = "收集成功{}个<br>".format(successNum)

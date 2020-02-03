@@ -1,7 +1,8 @@
 from app.models.user import User
 from app.models.questionnaire import Questionnaire
 import time
-from app.utils.dataCalculation import checkTimeIsDead
+from app.utils.dataCalculation import checkTimeIsDead, switchTimeFromTick
+from flask import current_app
 
 
 class QuestionnaireForm:
@@ -96,3 +97,34 @@ class EditForm:
 
     def saveEdition(self):
         self.questionnaire.save()
+
+
+class TemplatesForm:
+    templatesData = []
+
+    def __init__(self):
+        name = current_app.config['TEMPALTES_MANAGER']
+        self.templateUserId = str(User.objects.filter(userName=name).first().id)
+
+    def getTemplatesData(self):
+        allTemplatesData = Questionnaire.objects.filter(questionnaireUserId=self.templateUserId)
+        for data in allTemplatesData:
+            basicData = data.questionnaireBasicData
+            information = {
+                "time": switchTimeFromTick(basicData['questionnaireFlag']),
+                "name": basicData['basicInfo']['title'],
+                "info": "None",
+                "flag": basicData['questionnaireFlag']
+            }
+            self.templatesData.append(information)
+        return self.templatesData
+
+    @staticmethod
+    def copyTemplatesData(tempFlag, targetUser):
+        data = QuestionnaireForm("templateMaker").getQuesionNaireByFlag(tempFlag)
+        basicData = data.questionnaireBasicData
+        newForm = QuestionnaireForm(targetUser)
+        newForm.newQuestionnaire(
+            questionnaireFlag=str(round(time.time() * 1000)),
+            questionnaireBasicData=basicData
+        )
