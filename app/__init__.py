@@ -1,7 +1,7 @@
 # 项目初始化文件
 from flask import Flask
 from app.config import developmentConfig
-from app.extensions import configExtensions
+from app.extensions import configExtensions, schedule
 from app.router import configBlueprint
 
 
@@ -21,6 +21,9 @@ def createApp():
 
     # 配置蓝本
     configBlueprint(app)
+
+    # 运行任务
+    schedule.start()
 
     # 返回app实例对象
     return app

@@ -8,8 +8,11 @@ def emailFormCheck(emailstr):
     return target
 
 
-def sendEmail(title, recipients, body):
+def sendEmail(title, recipients, body="", html=""):
     mylist = [recipients]
     msg = Message(title, recipients=mylist)
-    msg.body = body
+    if body != "":
+        msg.body = body
+    if html != "":
+        msg.html = html
     mail.send(msg)

@@ -1,4 +1,4 @@
-# 问卷网
+# 问卷网爬虫
 from bs4 import BeautifulSoup
 import requests
 import time
@@ -6,7 +6,6 @@ import re
 
 
 class WJWSpider:
-
     def __init__(self, url):
         htmlData = requests.get(url).text
         self.soup = BeautifulSoup(htmlData, 'html.parser')
@@ -61,7 +60,7 @@ class WJWSpider:
         return problemStore
 
 
-def makeQuestionnaireStruct(link):
+def makeQuestionnaireStructFromWJW(link):
     form = WJWSpider(link)
     basicInfo = form.getQuestionnireBasicInfo()
     basicDataStruct = {
@@ -90,10 +89,11 @@ def makeQuestionnaireStruct(link):
 
 
 def getLinks(times):
-    # 可以自定义range大小 可以开定时任务挂服务器 然后迁移数据库
+    # 可以自定义range大小 可以开定时任务挂服务器
     linkList = []
     for i in range(1, times):
-        targetLink = "https://www.wenjuan.com/lib/recommend/?keywords=&scene=0&label=0&industry_sector=0&page={}".format(i)
+        targetLink = "https://www.wenjuan.com/lib/recommend/?keywords=&scene=0&label=0&industry_sector=0&page={}".format(
+            i)
         htmlData = requests.get(targetLink).text
         soup = BeautifulSoup(htmlData, 'html.parser')
         links = soup.find_all("a", href=re.compile("/lib_detail_full/"))
