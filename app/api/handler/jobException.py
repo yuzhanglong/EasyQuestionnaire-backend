@@ -55,6 +55,18 @@ class WrongQuestionnaire(JobException):
     information = "这个问卷不存在 请确认后重试"
 
 
+class WrongQuestionnairePassWd(JobException):
+    code = 403
+    status = "error"
+    information = "问卷密码错误 请重新验证"
+
+
+class SameIp(JobException):
+    code = 404
+    status = "error"
+    information = "当前ip已经填写过问卷 请不要重复填写"
+
+
 @jobException.app_errorhandler(JobException)
 def handleJobException(error):
     response = jsonify(error.toDict())

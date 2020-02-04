@@ -1,6 +1,7 @@
 from app.models.user import User
 from app.utils.emailtools import emailFormCheck, sendEmail
 from app.utils.authCheck import generateAuthToken, checkAuthToken
+from app.api.handler.jobException import WrongPasswd, NotRightEmail, SameUser,WrongAuth
 
 
 class registerForm:
@@ -8,13 +9,18 @@ class registerForm:
         self.userName = kwargs['userName']
         self.userEmail = kwargs['userEmail']
         self.userPassword = kwargs['userPassword']
+        self.checkEmail()
+        self.checkSameUser()
+
 
     def checkSameUser(self):
         user = User.objects.filter(userName=self.userName).first()
-        return user
+        if user:
+            raise SameUser
 
     def checkEmail(self):
-        return not emailFormCheck(self.userEmail)
+        if not emailFormCheck(self.userEmail):
+            raise NotRightEmail
 
     # 提交注册表单
     def submitRegistForm(self):
@@ -34,12 +40,13 @@ class loginForm:
     def __init__(self, **kwargs):
         self.userName = kwargs['userName']
         self.userPassword = kwargs['userPassword']
+        self.checkUser()
 
     # 检验用户
     def checkUser(self):
         user = User.objects.filter(userName=self.userName, userPassword=self.userPassword).first()
-        return user and user.userIsActivate
-
+        if not (user and user.userIsActivate):
+            raise WrongPasswd
 
     # 制造token
     def makeUserToken(self):
@@ -53,4 +60,5 @@ class confirmForm:
         self.token = token
 
     def confirmToken(self):
-        return checkAuthToken(self.token)
+        if not checkAuthToken(self.token):
+            raise WrongAuth

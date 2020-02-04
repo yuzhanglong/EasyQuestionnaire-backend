@@ -1,6 +1,7 @@
 from app.models.questionnaire import Questionnaire
 from app.utils.authCheck import checkAuthToken
 from app.utils.dataCalculation import getPlaces, getAllProblemCalculation
+from app.api.handler.jobException import WrongAuth
 
 
 class AnalysisForm:
@@ -12,9 +13,10 @@ class AnalysisForm:
     def checkUser(self, token):
         user = checkAuthToken(token)
         if not user:
-            return False
+            raise WrongAuth
         userName = str(user.id)
-        return userName == self.questionnare.questionnaireUserId
+        if userName != self.questionnare.questionnaireUserId:
+            raise WrongAuth
 
     def getResult(self):
         # 这份问卷的样本数目

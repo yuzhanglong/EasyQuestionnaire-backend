@@ -1,0 +1,32 @@
+from flask import Blueprint
+from flask import request
+from app.components.completeOperation import CompleteForm
+
+complete = Blueprint('complete', __name__, url_prefix='/complete')
+
+
+# 问卷填报蓝图
+
+# check是否限制访问
+@complete.route('/get_condition/<flag>', methods=['GET'])
+def getCondition(flag):
+    form = CompleteForm(flag).getCondition()
+    return {'status': 'success', 'information': form}
+
+
+@complete.route('/get_problems/<flag>', methods=['GET'])
+def getProblems(flag):
+    form = CompleteForm(flag).getProblems()
+    return {'status': 'success', 'information': form}
+
+
+@complete.route('/check_key/<flag>', methods=['POST'])
+def checkSecretKey(flag):
+    CompleteForm(flag).checkSecretKey(request.json['key'])
+    return {'status': 'success', 'information': 'none'}
+
+
+@complete.route('/submit_data/<flag>', methods=['POST'])
+def subMitComplete(flag):
+    CompleteForm(flag).subMitComplete(request.json, request.remote_addr)
+    return {'status': 'success', 'information': 'none'}

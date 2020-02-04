@@ -3,6 +3,7 @@ from app.models.questionnaire import Questionnaire
 import time
 from app.utils.dataCalculation import checkTimeIsDead, switchTimeFromTick
 from flask import current_app
+from app.api.handler.jobException import WrongQuestionnaire
 
 
 class QuestionnaireForm:
@@ -33,6 +34,8 @@ class QuestionnaireForm:
     # 拿到单个问卷数据(编辑、数据处理可用)
     def getQuesionNaireByFlag(self, flag):
         questionnaire = Questionnaire.objects.filter(questionnaireFlag=str(flag), questionnaireUserId=self.uid).first()
+        if questionnaire is None:
+            raise WrongQuestionnaire
         return questionnaire
 
     # 删除问卷数据

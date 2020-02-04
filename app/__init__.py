@@ -2,7 +2,7 @@
 from flask import Flask
 from app.config import developmentConfig
 from app.extensions import configExtensions, schedule
-from app.router import configBlueprint
+from app.api import configBlueprint
 from app.models.user import User
 import random
 

@@ -11,8 +11,6 @@ analysis = Blueprint('analysis', __name__, url_prefix='/analysis')
 def getResult(flag):
     res = request.json
     form = AnalysisForm(flag)
-    isPass = form.checkUser(res['token'])
-    if isPass:
-        data = form.getResult()
-        return {"status": "success", 'information': data}
-    return {"status": "error", 'information': 'is none of your business'}, 403
+    form.checkUser(res['token'])
+    data = form.getResult()
+    return {"status": "success", 'information': data}
