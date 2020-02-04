@@ -115,7 +115,8 @@ def getQuestionnaireData():
     isPass = confirmForm(data['token']).confirmToken()
     if isPass:
         data = QuestionnaireForm(data['userName']).getQuestionnaireData()
-        return {'status': 'success', 'information': data}
+        pages = TemplatesForm().getTemplatesTotalPages()
+        return {'status': 'success', 'information': data, "pages":pages}
 
 
 @questionnaire.route('/get_data_by_flag', methods=['POST'])
@@ -151,7 +152,8 @@ def submitQuestionnaireSpreadData():
 
 @questionnaire.route('/get_templates', methods=['GET'])
 def getTemplatesData():
-    tempForm = TemplatesForm().getTemplatesData()
+    page = request.args.get('page')
+    tempForm = TemplatesForm().getTemplatesData(int(page))
     return {'status': 'success', 'information': tempForm}
 
 

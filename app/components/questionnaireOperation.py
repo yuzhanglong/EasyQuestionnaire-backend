@@ -100,14 +100,16 @@ class EditForm:
 
 
 class TemplatesForm:
-    templatesData = []
 
     def __init__(self):
         name = current_app.config['TEMPALTES_MANAGER']
         self.templateUserId = str(User.objects.filter(userName=name).first().id)
 
-    def getTemplatesData(self):
-        allTemplatesData = Questionnaire.objects.filter(questionnaireUserId=self.templateUserId)
+    def getTemplatesData(self, page):
+        templatesData = []
+        beginIndex = (page - 1) * 10
+        allTemplatesData = Questionnaire.objects(questionnaireUserId=self.templateUserId)[
+                           beginIndex: beginIndex + 10]
         for data in allTemplatesData:
             basicData = data.questionnaireBasicData
             information = {
@@ -116,8 +118,16 @@ class TemplatesForm:
                 "info": "None",
                 "flag": basicData['questionnaireFlag']
             }
-            self.templatesData.append(information)
-        return self.templatesData
+            templatesData.append(information)
+        return templatesData
+
+    def getTemplatesTotalPages(self):
+        allTemplatesData = Questionnaire.objects(questionnaireUserId=self.templateUserId)
+        check = len(allTemplatesData) % 10
+        p = int(len(allTemplatesData) / 10)
+        if check:
+            return p + 1
+        return p
 
     @staticmethod
     def copyTemplatesData(tempFlag, targetUser):
