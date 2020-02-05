@@ -46,7 +46,7 @@ def makeQRCodePost(backGroundId, styleType, problemFlag, title):
             'text': (30, 700)
         }
     ]
-    targetLink = 'http://192.168.0.129:8080/complete/' + str(problemFlag)
+    targetLink = 'http://192.168.0.129:8080/complete/' + str(problemFlag) + "?type=preview"
     qrInit(targetLink)
     # 全局样式
     targetStyle = styles[int(styleType)]

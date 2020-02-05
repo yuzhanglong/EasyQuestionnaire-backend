@@ -46,7 +46,7 @@ class SameUser(JobException):
 class WrongAuth(JobException):
     code = 403
     status = "error"
-    information = "这个用户名已经被注册，请换一个 (●—●)"
+    information = "权限错误!"
 
 
 class WrongQuestionnaire(JobException):

@@ -9,7 +9,7 @@ class CompleteForm:
     def __init__(self, flag):
         self.flag = flag
         self.questionnare = Questionnaire.objects.filter(questionnaireFlag=self.flag).first()
-        if self.questionnare:
+        if not self.questionnare:
             raise WrongQuestionnaire
 
     def getCondition(self):

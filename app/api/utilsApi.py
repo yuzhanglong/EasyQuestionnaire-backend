@@ -11,7 +11,7 @@ def getQuestionnaireQRCode():
     flag = request.args.get('flag')
     if flag is None:
         return "ERROR!", 404
-    link = baseURL + flag
+    link = baseURL + flag + "?type=preview"
     return makeQRCode(link)
 
 
