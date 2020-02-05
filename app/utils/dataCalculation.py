@@ -37,7 +37,7 @@ def getProblemCalculation(problem, problemIndex, completes):
                 break
             for complete in completes:
                 try:
-                    for t in complete['completeData'][problemIndex]:
+                    for t in complete['completeData'][problemIndex]['resolution']:
                         if t == index:
                             op['numbers'] += 1
                 except Exception as e:
