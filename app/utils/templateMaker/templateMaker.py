@@ -11,8 +11,6 @@ from flask import current_app
 class SpiderTag:
     def __init__(self, index):
         self.info = BasicInfo.objects.first()
-        if not self.info:
-            self.info = self.initDocument()
         self.index = index
 
     def getNewestLink(self):
@@ -23,18 +21,12 @@ class SpiderTag:
         self.info.spidersTagLinks[self.index] = newLink
         self.info.save()
 
-    @staticmethod
-    def initDocument():
-        basicinfo = BasicInfo()
-        basicinfo.save()
-        return basicinfo
-
 
 def pushWJWDataToDB():
     with db.app.app_context():
         name = db.app.config['TEMPALTES_MANAGER']
         templateUserId = str(User.objects.filter(userName=name).first().id)
-        myList = getLinks(2)
+        myList = getLinks(5)
         # 计数器
         count = 0
         failedNum = 0
