@@ -2,6 +2,7 @@ import qrcode
 from PIL import Image, ImageDraw, ImageFont
 import io
 from flask import send_file
+from flask import current_app
 
 
 # qr初始化 返回一个PIL img图像
@@ -46,7 +47,8 @@ def makeQRCodePost(backGroundId, styleType, problemFlag, title):
             'text': (30, 700)
         }
     ]
-    targetLink = 'http://192.168.0.129:8080/complete/' + str(problemFlag) + "?type=preview"
+    base = current_app.config['WEB_BASE_URL']
+    targetLink = base + '/' + str(problemFlag) + "?type=preview"
     qrInit(targetLink)
     # 全局样式
     targetStyle = styles[int(styleType)]

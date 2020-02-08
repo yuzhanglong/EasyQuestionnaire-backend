@@ -30,6 +30,7 @@ class developmentConfig(Config):
         'db': 'questionnaire-test',
         'host': 'mongodb://localhost/questionnaire-test'
     }
+    WEB_BASE_URL = "http://192.168.0.129:8080"
 
 
 class productionConfig(Config):
@@ -38,6 +39,7 @@ class productionConfig(Config):
         'db': 'questionnaire',
         'host': 'mongodb://localhost/questionnaire'
     }
+    WEB_BASE_URL = "http://wenjuan.yuzzl.top"
 
     # 定时任务
     SCHEDULER_API_ENABLED = True
@@ -47,7 +49,7 @@ class productionConfig(Config):
             "func": runTask,  # 任务位置
             "trigger": "cron",  # 触发器
             "hour": '15',  # 时间
-            "minute":'50'
+            "minute": '50'
         }
     ]
 

@@ -1,17 +1,17 @@
 from app.utils.qrCode import makeQRCode, getQRMakerBgc, makeQRCodePost
 from flask import request, Blueprint
-from PIL import Image
+from flask import current_app
 
 utils = Blueprint('utils', __name__, url_prefix='/utils')
 
 
 @utils.route('/qrcode/get_code', methods=['GET'])
 def getQuestionnaireQRCode():
-    baseURL = 'http://192.168.0.129:8080/complete/'
+    baseURL = current_app.config['WEB_BASE_URL'] + '/complete/'
     flag = request.args.get('flag')
     if flag is None:
         return "ERROR!", 404
-    link = baseURL + flag + "?type=preview"
+    link = baseURL + flag + "?type=fill"
     return makeQRCode(link)
 
 
