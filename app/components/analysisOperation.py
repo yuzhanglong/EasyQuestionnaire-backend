@@ -7,7 +7,7 @@ from app.api.handler.jobException import WrongAuth
 class AnalysisForm:
     def __init__(self, flag):
         self.flag = flag
-        self.questionnare = Questionnaire.objects.filter(questionnaireFlag=self.flag).first()
+        self.questionnare = Questionnaire.objects.filter(questionnaireFlag=str(self.flag)).first()
 
     # 用户验证：查看问卷是不是本人的
     def checkUser(self, token):

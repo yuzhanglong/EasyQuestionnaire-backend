@@ -21,9 +21,8 @@ def checkAuthToken(token):
         current_app.logger.error(e)
         return False
     userId = data['userId']
-    user = User.objects.filter(str(User.id) == userId).first()
+    user = User.objects.filter(id=userId).first()
     if not user.userIsActivate:
         user.userIsActivate = True
         user.save()
     return user
-
