@@ -1,18 +1,21 @@
-from app.utils.qrCode import makeQRCode, getQRMakerBgc, makeQRCodePost
+from app.utils.qrCode import QRcode, getQRMakerBgc, QRcodePost
 from flask import request, Blueprint
-from flask import current_app
 
 utils = Blueprint('utils', __name__, url_prefix='/utils')
 
 
-@utils.route('/qrcode/get_code', methods=['GET'])
+@utils.route('/qrcode/get_qr_code', methods=['GET'])
 def getQuestionnaireQRCode():
-    baseURL = current_app.config['WEB_BASE_URL'] + '/complete/'
     flag = request.args.get('flag')
-    if flag is None:
-        return "ERROR!", 404
-    link = baseURL + flag + "?type=fill"
-    return makeQRCode(link)
+    code = QRcode(flag)
+    return code.showQRImg()
+
+
+@utils.route('/qrcode/download_qr_code', methods=['GET'])
+def downloadQuestionnaireQRCode():
+    flag = request.args.get('flag')
+    code = QRcode(flag)
+    return code.downloadQRImg()
 
 
 @utils.route('/qrcode/qr_pictures/<pictureId>', methods=['GET'])
@@ -20,7 +23,13 @@ def getMakerBgc(pictureId):
     return getQRMakerBgc(pictureId)
 
 
-@utils.route('/qrcode/get_post', methods=['GET'])
+@utils.route('/qrcode/download_qr_post', methods=['GET'])
 def getPost():
     data = request.args
-    return makeQRCodePost(data['bgcid'], data['styletype'], data['flag'], data['title'])
+    post = QRcodePost(
+        flag=data['flag'],
+        backgroundId=data['backgroundid'],
+        styleType=data['styletype'],
+        title=data['title']
+    )
+    return post.downloadPost()
