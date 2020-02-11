@@ -137,7 +137,9 @@ class TemplatesForm:
         data = QuestionnaireForm("templateMaker").getQuesionNaireByFlag(tempFlag)
         basicData = data.questionnaireBasicData
         newForm = QuestionnaireForm(targetUser)
+        newFlag = str(round(time.time() * 1000))
+        basicData['questionnaireFlag'] = newFlag
         newForm.newQuestionnaire(
-            questionnaireFlag=str(round(time.time() * 1000)),
+            questionnaireFlag=newFlag,
             questionnaireBasicData=basicData
         )
