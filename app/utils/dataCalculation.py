@@ -11,6 +11,8 @@ def getPlaces(questionnaireCompleteResult):
     for data in questionnaireCompleteResult:
         condition = data['ipCondition']
         province = condition['pro']
+        # 去掉'省'字 否则前端显示不了
+        province = province[:-1]
         if province in total:
             total[province] += 1
         else:

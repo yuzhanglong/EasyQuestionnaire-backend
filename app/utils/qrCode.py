@@ -24,7 +24,7 @@ class QRcode:
     def __init__(self, flag):
         self.flag = flag
         base = current_app.config['WEB_BASE_URL']
-        self.targetLink = base + '/' + flag + "?type=preview"
+        self.targetLink = base + '/complete/' + flag + "?type=fill"
         self.qrPILImg = self.qrInit()
         self.qrName = "wenjuan_" + flag + ".png"
 
