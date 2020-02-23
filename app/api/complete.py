@@ -29,5 +29,8 @@ def checkSecretKey(flag):
 @complete.route('/submit_data/<flag>', methods=['POST'])
 def subMitComplete(flag):
     # 由于nginx代理的原因 原来的方法是拿不到真实ip地址的
-    CompleteForm(flag).subMitComplete(request.json, request.headers['X-Real-Ip'])
+    if 'X-Real-Ip' in request.headers:
+        CompleteForm(flag).subMitComplete(request.json, request.headers['X-Real-Ip'])
+    else:
+        CompleteForm(flag).subMitComplete(request.json)
     return {'status': 'success', 'information': 'none'}

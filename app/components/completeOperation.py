@@ -32,7 +32,7 @@ class CompleteForm:
     def getProblems(self):
         return self.questionnare.questionnaireBasicData
 
-    def subMitComplete(self, completeData, ip):
+    def subMitComplete(self, completeData, ip="null"):
         # 返回0 :ip重复
         if ip in self.questionnare.questionnaireIP and self.questionnare.questionnaireIPControl:
             raise SameIp
