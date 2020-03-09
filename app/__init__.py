@@ -13,7 +13,7 @@ def createApp():
     app = Flask(__name__)
 
     # 加载app配置
-    app.config.from_object(productionConfig)
+    app.config.from_object(developmentConfig)
 
     # 调试模式
     app.debug = True
