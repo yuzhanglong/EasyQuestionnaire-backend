@@ -1,3 +1,9 @@
+# @Time    : 2020/3/7 13:00
+# @Author  : yuzhanglong
+# @Email   : yuzl1123@163.com
+from werkzeug.security import generate_password_hash, check_password_hash
+
+from app.api.error.exceptions import WrongPassword
 from app.extensions import db
 
 
@@ -5,22 +11,37 @@ class User(db.Document):
     # 用户名
     userName = db.StringField(required=True)
     # 密码
-    userPassword = db.StringField(max_length=30)
+    passwordHash = db.StringField()
     # 邮箱
-    userEmail = db.StringField(max_length=30)
-    # 邮箱是否激活
-    userIsActivate = db.BooleanField()
+    email = db.StringField(max_length=30)
+    # 邮箱是否激活  生产环境下默认设置为已经激活
+    isActive = db.BooleanField(default=True)
 
+    def getUserId(self):
+        return str(self.id)
 
-class PersonalInfo(db.EmbeddedDocument):
-    pass
+    @property
+    def password(self):
+        return self.passwordHash
 
+    @password.setter
+    def password(self, purePassword):
+        self.passwordHash = generate_password_hash(purePassword)
 
-'''
-这里可以开一个 EmbeddedDocument 
-来存储个人的信息 
-比如年龄 生日 性别 头像等等
-相比全部放在user里面
-单独抽出来应该会使数据的层次更有条理
-但由于此项目不需要这些内容 这里暂时pass掉 仅为自己提供一种思路
-'''
+    # 注册一个用户
+    def userRegister(self, userName, password):
+        self.userName = userName
+        self.password = password
+        self.save()
+
+    @staticmethod
+    def userLogin(userName, password):
+        user = User.objects.filter(userName=userName).first()
+        if not user:
+            raise WrongPassword
+        if not user.checkPassword(password):
+            raise WrongPassword
+        return user
+
+    def checkPassword(self, purePassword):
+        return check_password_hash(self.passwordHash, purePassword)
