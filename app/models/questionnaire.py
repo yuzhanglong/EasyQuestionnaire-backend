@@ -154,12 +154,31 @@ class Questionnaire(db.Document):
     @staticmethod
     def getAnalysisData(qid):
         from app.models.problem import Problem
+        from app.models.complete import Complete
+        from app.utils.dataCalculate import DataCalculate
         # 拿到所有problems
         resolutions = []
+        q = Questionnaire.objects.filter(questionnaireId=qid).first()
         problems = Problem.objects.filter(targetQuestionnaireId=qid)
+        completes = Complete.getCompleteAmount(qid)
         for p in problems:
             res = p.getResolution()
             resolutions.append(res)
         return {
-            "data": resolutions
+            "data": resolutions,
+            "basicInfo": {
+                "totalComplete": completes,
+                "renewTime": q.renewTime,
+                "title": q.title,
+            },
+            "provinceInfo": DataCalculate.getProvinceData(qid)
         }
+
+    @staticmethod
+    def saveFromTemplates(myMap):
+        Questionnaire(
+            ownerId=myMap['ownerId'],
+            questionnaireId=myMap['questionnaireId'],
+            title=myMap['title'],
+            subTitle=myMap['subTitle']
+        ).save()

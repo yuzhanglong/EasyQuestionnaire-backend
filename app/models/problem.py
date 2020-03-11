@@ -5,7 +5,6 @@
 from app.api.error.exceptions import NoQuestionnaire, NoProblem
 from app.extensions import db
 from app.models.questionnaire import Questionnaire
-from app.utils.dataCalculate import DataCalcalate
 from app.utils.timeHelper.timeHelper import getUniqueId
 
 
@@ -89,18 +88,24 @@ class Problem(db.Document):
         # 评价题
         if self.type == "SCORE":
             # 表示一到五颗星 开始设置为0
-            optionRes = [0, 0, 0, 0, 0]
+            optionRes = []
+            for i in range(1, 6):
+                optionRes.append({
+                    "title": i,
+                    "resolution": 0
+                })
             for r in res:
                 if len(r.resolution) is 0:
                     continue
                 score = r.resolution[0]
-                optionRes[score] += 1
+                optionRes[score]["resolution"] += 1
 
         return {
             # 返回的问题标题
             "title": self.title,
             # 问题统计数组
-            "resolution": optionRes
+            "resolution": optionRes,
+            "type": self.type
         }
 
     @staticmethod
@@ -136,3 +141,15 @@ class Problem(db.Document):
         for p in ps:
             problems.append(p.getProblemJson())
         return problems
+
+    @staticmethod
+    def saveFromTemplates(problems):
+        for p in problems:
+            Problem(
+                title=p['title'],
+                type=p['type'],
+                options=p['options'],
+                problemId=p['problemId'],
+                ownerId=p['ownerId'],
+                targetQuestionnaireId=p['targetQuestionnaireId']
+            ).save()

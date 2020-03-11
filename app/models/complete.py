@@ -11,7 +11,7 @@ from app.extensions import db
 # 问卷填写记录
 from app.models.questionnaire import Questionnaire
 from app.models.resolution import Resolution
-from app.utils.dataCalculate import DataCalcalate
+from app.utils.dataCalculate import DataCalculate
 
 
 class Complete(db.Document):
@@ -38,7 +38,7 @@ class Complete(db.Document):
         completes = data['completeData']
         self.completeData = completes
         self.makeResolution(completes)
-        self.ipCondition = DataCalcalate.getPlace(ip)
+        self.ipCondition = DataCalculate.getPlace(ip)
         self.targetQuestionnaireId = qid
         self.save()
 
@@ -58,3 +58,13 @@ class Complete(db.Document):
         for index, p in enumerate(ps):
             p.addCompletes(completes[index])
             p.save()
+
+    @staticmethod
+    def getCompleteAmount(qid):
+        cs = Complete.objects.filter(targetQuestionnaireId=qid)
+        return len(cs)
+
+    # 获得目标省份
+    def getIpProvince(self):
+        # 去掉'省'字 否则前端显示不了
+        return self.ipCondition['pro'][:-1]

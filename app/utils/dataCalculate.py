@@ -3,7 +3,7 @@ import requests
 from flask import current_app
 
 
-class DataCalcalate:
+class DataCalculate:
     # 统计数量的题目类型
     typeToDoCount = ["SINGLE_SELECT", "MULTIPLY_SELECT", "DROP_DOWN"]
 
@@ -20,13 +20,13 @@ class DataCalcalate:
         return data
 
     @staticmethod
-    def getPlaces(questionnaireCompleteResult):
+    def getProvinceData(qid):
+        from app.models.complete import Complete
         total = {}
-        for data in questionnaireCompleteResult:
-            condition = data['ipCondition']
-            province = condition['pro']
+        completes = Complete.objects.filter(targetQuestionnaireId=qid)
+        for c in completes:
+            province = c.getIpProvince()
             # 去掉'省'字 否则前端显示不了
-            province = province[:-1]
             if province in total:
                 total[province] += 1
             else:

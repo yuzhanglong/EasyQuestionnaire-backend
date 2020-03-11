@@ -1,6 +1,7 @@
 from flask import Flask
 from app.config.baseConfig import productionConfig, developmentConfig
 from app.api import configBlueprint
+from app.config.database import initDataBase
 from app.extensions import configExtensions
 
 
@@ -16,6 +17,9 @@ def createApp():
     configBlueprint(app)
 
     configExtensions(app)
+
+    # 初始化数据库
+    initDataBase()
 
     # 返回app实例对象
     return app

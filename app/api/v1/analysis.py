@@ -9,7 +9,7 @@ from app.utils.betterPrint.betterPrint import BetterPrint
 analysis = BetterPrint("analysis")
 
 
-@analysis.route('/analysis_data/<int:qid>', methods=['GET'])
+@analysis.route('/<int:qid>', methods=['GET'])
 @auth.login_required
 def getAnalysisData(qid):
     res = Questionnaire.getAnalysisData(qid)

@@ -2,7 +2,7 @@
 # @Author  : yuzhanglong
 # @Email   : yuzl1123@163.com
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from flask import current_app
 from app.api.error.exceptions import WrongPassword
 from app.extensions import db
 
@@ -45,3 +45,8 @@ class User(db.Document):
 
     def checkPassword(self, purePassword):
         return check_password_hash(self.passwordHash, purePassword)
+
+    @staticmethod
+    def getTemplateUserId():
+        name = current_app.config['TEMPALTES_MANAGER']
+        return str(User.objects.filter(userName=name).first().id)

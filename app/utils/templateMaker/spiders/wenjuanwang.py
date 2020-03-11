@@ -4,6 +4,8 @@ import requests
 import time
 import re
 
+from app.utils.timeHelper.timeHelper import getUniqueId
+
 
 class WJWSpider:
     def __init__(self, url):
@@ -60,32 +62,35 @@ class WJWSpider:
         return problemStore
 
 
-def makeQuestionnaireStructFromWJW(link):
+def makeQuestionnaireStructFromWJW(link, ownerId):
     form = WJWSpider(link)
     basicInfo = form.getQuestionnireBasicInfo()
-    basicDataStruct = {
-        "basicInfo": basicInfo,
-        "problems": [],
-        "questionnaireFlag": "",
-        "sender": "模板题库"
+    qid = getUniqueId()
+    questionniare = {
+        "ownerId": ownerId,
+        "questionnaireId": qid,
+        "title": basicInfo['title'],
+        "subTitle": basicInfo['subTitle']
     }
+    problems = []
     problemTitles = form.getProblemTitles()
     problemTypes = form.getProblemTypes()
     opt = form.getProblemOptions()
     for index, title in enumerate(problemTitles):
         problem = {
-            "common": {
-                "type": problemTypes[index],
-                "title": title,
-                "options": opt[index]
-            },
-            "globalSetting": {
-                "required": False
-            },
-            "problemId": int(round(time.time() * 1000))
+            "title": title,
+            "type": problemTypes[index],
+            "options": opt[index],
+            "isRequire": False,
+            "problemId": getUniqueId(),
+            "ownerId": ownerId,
+            "targetQuestionnaireId": qid
         }
-        basicDataStruct['problems'].append(problem)
-    return basicDataStruct
+        problems.append(problem)
+    return {
+        "questionniare": questionniare,
+        "problems": problems
+    }
 
 
 def getLinks(times):
