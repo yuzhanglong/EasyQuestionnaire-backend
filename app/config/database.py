@@ -1,7 +1,7 @@
 import random
 from app.models.user import User
 from app.models.basicInfo import BasicInfo
-from app.conf.config import developmentConfig
+from app.config.baseConfig import developmentConfig
 
 
 def initDataBase():

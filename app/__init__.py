@@ -1,10 +1,7 @@
-# 项目初始化文件
 from flask import Flask
-from app.conf.config import developmentConfig, productionConfig
-from app.extensions import configExtensions
+from app.config.baseConfig import productionConfig, developmentConfig
 from app.api import configBlueprint
-from app.conf.database import initDataBase
-from app.conf.myTask import initTask
+from app.extensions import configExtensions
 
 
 # app创建函数
@@ -15,20 +12,10 @@ def createApp():
     # 加载app配置
     app.config.from_object(developmentConfig)
 
-    # 调试模式
-    app.debug = True
-
-    # 加载扩展
-    configExtensions(app)
-
     # 配置蓝本
     configBlueprint(app)
 
-    # 初始化数据库基本信息
-    initDataBase()
-
-    # 初始化任务
-    initTask()
+    configExtensions(app)
 
     # 返回app实例对象
     return app

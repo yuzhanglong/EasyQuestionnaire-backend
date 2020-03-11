@@ -1,6 +1,8 @@
 # @Time    : 2020/3/8 0:54
 # @Author  : yuzhanglong
 # @Email   : yuzl1123@163.com
+
+
 from flask import request
 from flask import current_app
 from app.api.error.errorHandler import Success
@@ -15,15 +17,15 @@ completes = BetterPrint("completes")
 # 获得当前问卷状态 用于限制填报者(过期情况 是否要密码)
 @completes.route('/get_condition/<int:qid>', methods=['GET'])
 def getCondition(qid):
-    r = Questionnaire.getConditions(questionnireId=qid)
+    r = Questionnaire.getConditions(questionnaireId=qid, isAdmin=False)
     return Success(information="获取问卷状态成功", payload=r)
 
 
 @completes.route('/check_key/<int:qid>', methods=['POST'])
 def checkSecretKey(qid):
     form = QuestionireSecretCheckForm().validateForApi()
-    Questionnaire.checkSecretKey(questionnireId=qid, key=form.secretKey.data)
-    return Success(information="验证成功")
+    res = Questionnaire.checkSecretKey(questionnaireId=qid, key=form.secretKey.data)
+    return Success(information="验证成功", payload=res)
 
 
 @completes.route('/submit_data/<int:qid>', methods=['POST'])

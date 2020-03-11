@@ -5,6 +5,7 @@ from flask import send_file
 from flask import current_app
 
 
+# 为前端提供图片展示 而非下载
 def showPILImg(PILimg):
     imgIo = io.BytesIO()
     PILimg.save(imgIo, 'PNG')
@@ -12,6 +13,7 @@ def showPILImg(PILimg):
     return send_file(imgIo, mimetype='image/png', cache_timeout=0)
 
 
+# 为前端提供图片下载功能
 def downloadPILImg(PILimg, imgName):
     imgIo = io.BytesIO()
     PILimg.save(imgIo, 'PNG')
@@ -41,11 +43,9 @@ class QRcode:
         PILImg = qr.make_image()
         return PILImg
 
-    # 为前端提供图片展示 而非下载
     def showQRImg(self):
         return showPILImg(self.qrPILImg)
 
-    # 为前端提供图片下载功能
     def downloadQRImg(self):
         return downloadPILImg(self.qrPILImg, self.qrName)
 

@@ -36,7 +36,7 @@ class QuestionnaireForm(BaseForm):
     deadline = DateTimeField()
     renewTime = DateTimeField()
 
-    questionnireId = IntegerField(validators=[DataRequired(message="目标问卷id不得为空")])
+    questionnaireId = IntegerField(validators=[DataRequired(message="目标问卷id不得为空")])
 
 
 class DeleteQuestionnaireForm(BaseForm):
@@ -48,7 +48,7 @@ class ProblemForm(BaseForm):
     title = StringField(validators=[DataRequired(message="问题标题不得为空")])
     type = StringField(validators=[DataRequired(message="问题类型不得为空")])
     isRequire = BooleanField()
-    targetQuestionnireId = StringField(validators=[DataRequired(message="对应问卷id不得为空")])
+    targetQuestionnaireId = StringField(validators=[DataRequired(message="对应问卷id不得为空")])
 
 
 class EditProblemForm(BaseForm):
@@ -66,5 +66,5 @@ class QuestionireSecretCheckForm(BaseForm):
     secretKey = StringField(validators=[DataRequired(message="问卷密码不得为空")])
 
 
-class QuestionnireCompleteForm(BaseForm):
+class QuestionnaireCompleteForm(BaseForm):
     pass

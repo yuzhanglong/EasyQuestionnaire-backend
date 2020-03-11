@@ -2,9 +2,10 @@
 # @Author  : yuzhanglong
 # @Email   : yuzl1123@163.com
 
-from app.api.error.exceptions import NoQuestionnire, NoProblem
+from app.api.error.exceptions import NoQuestionnaire, NoProblem
 from app.extensions import db
 from app.models.questionnaire import Questionnaire
+from app.utils.dataCalculate import DataCalcalate
 from app.utils.timeHelper.timeHelper import getUniqueId
 
 
@@ -20,17 +21,17 @@ class Problem(db.Document):
     # 问题标记 是一个时间戳 便于问卷排序
     problemId = db.IntField()
     # 对应问卷
-    targetQuestionnireId = db.IntField()
+    targetQuestionnaireId = db.IntField()
     # 拥有者id
     ownerId = db.StringField()
 
     # 添加一个问题
     def appendOneProblem(self, ownerId, form):
         # 检查问卷是不是自己的
-        q = Questionnaire.objects.filter(ownerId=ownerId, questionnireId=form.targetQuestionnireId.data).first()
+        q = Questionnaire.objects.filter(ownerId=ownerId, questionnaireId=form.targetQuestionnaireId.data).first()
         if not q:
-            raise NoQuestionnire
-        self.targetQuestionnireId = form.targetQuestionnireId.data
+            raise NoQuestionnaire
+        self.targetQuestionnaireId = form.targetQuestionnaireId.data
         self.title = form.title.data
         self.type = form.type.data
         self.ownerId = ownerId
@@ -45,9 +46,62 @@ class Problem(db.Document):
             "options": self.options,
             "isRequire": self.isRequire,
             "problemId": self.problemId,
-            "targetQuestionnireId": self.targetQuestionnireId,
+            "targetQuestionnaireId": self.targetQuestionnaireId,
         }
         return payLoad
+
+    def getResolution(self):
+        from app.models.resolution import Resolution
+        optionRes = []
+        res = Resolution.getResolutionByPid(self.problemId)
+
+        # 填空题
+        if self.type == "BLANK_FILL":
+            for r in res:
+                if len(r.resolution) is 0:
+                    continue
+                optionRes.append(r.resolution[0])
+
+        # 单选题 下拉题
+        if self.type == "SINGLE_SELECT" or self.type == "DROP_DOWN":
+            optionRes = self.options
+            for r in res:
+                if len(r.resolution) is 0:
+                    continue
+                pos = r.resolution[0]
+                if 'resolution' not in optionRes[pos]:
+                    optionRes[pos]['resolution'] = 1
+                else:
+                    optionRes[pos]['resolution'] += 1
+
+        # 多选题
+        if self.type == "MULTIPLY_SELECT":
+            optionRes = self.options
+            for r in res:
+                if len(r.resolution) is 0:
+                    continue
+                for pos in r.resolution:
+                    if 'resolution' not in optionRes[pos]:
+                        optionRes[pos]['resolution'] = 1
+                    else:
+                        optionRes[pos]['resolution'] += 1
+
+        # 评价题
+        if self.type == "SCORE":
+            # 表示一到五颗星 开始设置为0
+            optionRes = [0, 0, 0, 0, 0]
+            for r in res:
+                if len(r.resolution) is 0:
+                    continue
+                score = r.resolution[0]
+                optionRes[score] += 1
+
+        return {
+            # 返回的问题标题
+            "title": self.title,
+            # 问题统计数组
+            "resolution": optionRes
+        }
 
     @staticmethod
     def deleteOneProblem(ownerId, problemId):
@@ -57,8 +111,8 @@ class Problem(db.Document):
         p.delete()
 
     @staticmethod
-    def deleteProblems(ownerId, questionnireId):
-        ps = Problem.objects.filter(ownerId=ownerId, targetQuestionnireId=questionnireId)
+    def deleteProblems(ownerId, questionnaireId):
+        ps = Problem.objects.filter(ownerId=ownerId, targetQuestionnaireId=questionnaireId)
         ps.delete()
 
     # 编辑一个问题
@@ -78,9 +132,7 @@ class Problem(db.Document):
     def getProblems(qid):
         # 按照problemid 其实是时间戳 创建的顺序其实代表了题号的顺序 保证题号不乱
         problems = []
-        ps = Problem.objects.filter(targetQuestionnireId=qid).order_by('problemId')
-        if not ps:
-            raise NoProblem
+        ps = Problem.objects.filter(targetQuestionnaireId=qid).order_by('problemId')
         for p in ps:
             problems.append(p.getProblemJson())
         return problems

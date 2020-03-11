@@ -19,20 +19,20 @@ questionnaires = BetterPrint("questionnaires")
 # 新建问卷(创建一个空的问卷)
 @questionnaires.route('/create', methods=['GET'])
 @auth.login_required
-def createQuestionnire():
+def createQuestionnaire():
     userId = g.userInfo.userId
-    qid = Questionnaire().createQuestionnire(ownerId=userId)
+    qid = Questionnaire().createQuestionnaire(ownerId=userId)
     return Success(information="新建问卷成功", payload={"questionnaireId": qid})
 
 
 # 删除问卷
 @questionnaires.route('/delete', methods=['POST'])
 @auth.login_required
-def deleteQuestionnire():
+def deleteQuestionnaire():
     userId = g.userInfo.userId
     form = DeleteQuestionnaireForm().validateForApi()
-    Problem.deleteProblems(ownerId=userId, questionnireId=form.questionnaireId.data)
-    Questionnaire.deleteQuestionnire(ownerId=userId, questionnireId=form.questionnaireId.data)
+    Problem.deleteProblems(ownerId=userId, questionnaireId=form.questionnaireId.data)
+    Questionnaire.deleteQuestionnaire(ownerId=userId, questionnaireId=form.questionnaireId.data)
     return Success(information="删除问卷成功")
 
 
@@ -42,7 +42,7 @@ def deleteQuestionnire():
 def editQuestionnaire():
     userId = g.userInfo.userId
     form = QuestionnaireForm().validateForApi()
-    Questionnaire.editQuestionnaire(ownerId=userId, questionnireId=form.questionnireId.data, form=form)
+    Questionnaire.editQuestionnaire(ownerId=userId, questionnaireId=form.questionnaireId.data, form=form)
     return Success(information="编辑问卷成功")
 
 
@@ -66,6 +66,7 @@ def deleteOneProblem():
     return Success(information="删除问题成功")
 
 
+# 编辑问题
 @questionnaires.route('/edit_one_problem', methods=['POST'])
 @auth.login_required
 def editOneProblem():
@@ -75,9 +76,27 @@ def editOneProblem():
     return Success(information="编辑问题成功")
 
 
-@questionnaires.route('/get_questionnire/<int:qid>', methods=['GET'])
+# 获取问卷(单个 用来编辑)
+@questionnaires.route('/get_questionnaire/<int:qid>', methods=['GET'])
 @auth.login_required
-def getQuestionnire(qid):
+def getQuestionnaire(qid):
     userId = g.userInfo.userId
-    res = Questionnaire.getQuestionnire(ownerId=userId, questionnireId=qid)
+    res = Questionnaire.getQuestionnaire(ownerId=userId, questionnaireId=qid, isAdmin=True)
     return Success(information="获取问卷成功", payload=res)
+
+
+# 获取当前用户下的所有问卷
+@questionnaires.route('/get_all_questionnaire', methods=['GET'])
+@auth.login_required
+def getAllQuestionnaire():
+    userId = g.userInfo.userId
+    res = Questionnaire.getAllQuestionnaire(ownerId=userId)
+    return Success(information="获取用户问卷数据成功", payload={"questionnaires": res})
+
+
+# 这个接口拿到的问卷condition含有密码 供编辑使用
+@questionnaires.route('/get_condition/<int:qid>', methods=['GET'])
+@auth.login_required
+def getCondition(qid):
+    r = Questionnaire.getConditions(questionnaireId=qid, isAdmin=True)
+    return Success(information="获取问卷状态成功", payload=r)

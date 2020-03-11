@@ -5,12 +5,13 @@
 
 from datetime import datetime
 
-from app.api.error.exceptions import NoQuestionnire, SameIp
+from app.api.error.exceptions import NoQuestionnaire, SameIp
 from app.extensions import db
 
 # 问卷填写记录
 from app.models.questionnaire import Questionnaire
-from app.utils.dataCalculate import getPlace
+from app.models.resolution import Resolution
+from app.utils.dataCalculate import DataCalcalate
 
 
 class Complete(db.Document):
@@ -27,14 +28,33 @@ class Complete(db.Document):
 
     # 增添一条完成记录
     def createCompleteData(self, data, qid, ip=None):
-        q = Questionnaire.objects.filter(questionnireId=qid).first()
+        q = Questionnaire.objects.filter(questionnaireId=qid).first()
         if not q:
-            raise NoQuestionnire
+            raise NoQuestionnaire
         if q.ipControl and ip in q.questionnaireIP:
             raise SameIp
         if ip is not None:
             q.questionnaireIP.append(ip)
-        self.completeData = data['completeData']
-        self.ipCondition = getPlace(ip)
+        completes = data['completeData']
+        self.completeData = completes
+        self.makeResolution(completes)
+        self.ipCondition = DataCalcalate.getPlace(ip)
         self.targetQuestionnaireId = qid
         self.save()
+
+    @staticmethod
+    def makeResolution(completes):
+        for c in completes:
+            Resolution(
+                targetProblemId=c['targetProblemId'],
+                type=c['type'],
+                resolution=c['resolution']
+            ).save()
+
+    @staticmethod
+    def addCompleteNumber(qid, completes):
+        from app.models.problem import Problem
+        ps = Problem.objects.filter(targetQuestionnaireId=qid).order_by('problemId')
+        for index, p in enumerate(ps):
+            p.addCompletes(completes[index])
+            p.save()

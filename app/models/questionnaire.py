@@ -5,8 +5,9 @@
 
 from datetime import datetime
 
-from app.api.error.exceptions import NoQuestionnire, WrongProblemSecretKey
+from app.api.error.exceptions import NoQuestionnaire, WrongProblemSecretKey
 from app.extensions import db
+from app.utils.qrCode import QRcode
 from app.utils.timeHelper.timeHelper import getUniqueId, checkTimeIsDead
 
 
@@ -14,7 +15,7 @@ class Questionnaire(db.Document):
     # 发布者的唯一标识
     ownerId = db.StringField()
     # 问卷唯一标识
-    questionnireId = db.IntField()
+    questionnaireId = db.IntField()
 
     '''全局开关'''
     # 问卷运行状态
@@ -46,8 +47,8 @@ class Questionnaire(db.Document):
     title = db.StringField(default="请为这个问卷创建一个标题")
     subTitle = db.StringField(default="请为这个问卷创建一个副标题")
 
-    def getQuestionnireId(self):
-        return self.questionnireId
+    def getQuestionnaireId(self):
+        return self.questionnaireId
 
     # 问卷不在限制时间范围内 将其状态置为false 表示不可访问
     def makeItDead(self):
@@ -55,17 +56,17 @@ class Questionnaire(db.Document):
         self.save()
 
     # 新建一个问卷
-    def createQuestionnire(self, ownerId):
+    def createQuestionnaire(self, ownerId):
         t = getUniqueId()
-        self.questionnireId = t
+        self.questionnaireId = t
         self.ownerId = ownerId
         self.save()
-        return self.questionnireId
+        return self.questionnaireId
 
-    # 返回前端的问卷状态
-    def getConditionJson(self):
+    # 返回前端的问卷状态 type 0 表示不需要密码  type1 表示需要密码
+    def getConditionJson(self, isAdmin):
         payLoad = {
-            "questionnireId": self.questionnireId,
+            "questionnaireId": self.questionnaireId,
             "condition": self.condition,
             "isSecret": self.isSecret,
             "wechatControl": self.wechatControl,
@@ -75,52 +76,90 @@ class Questionnaire(db.Document):
             "deadline": self.deadline,
             "renewTime": self.renewTime,
             "title": self.title,
-            "subTitle": self.subTitle
+            "subTitle": self.subTitle,
+            "secretKey": self.secretKey if isAdmin else None,
         }
         return payLoad
 
     @staticmethod
-    def deleteQuestionnire(ownerId, questionnireId):
-        q = Questionnaire.objects.filter(ownerId=ownerId, questionnireId=questionnireId).first()
+    def deleteQuestionnaire(ownerId, questionnaireId):
+        q = Questionnaire.objects.filter(ownerId=ownerId, questionnaireId=questionnaireId).first()
         if not q:
-            raise NoQuestionnire
+            raise NoQuestionnaire
         q.delete()
 
     @staticmethod
-    def editQuestionnaire(ownerId, questionnireId, form):
-        q = Questionnaire.objects.filter(ownerId=ownerId, questionnireId=questionnireId).first()
+    def editQuestionnaire(ownerId, questionnaireId, form):
+        q = Questionnaire.objects.filter(ownerId=ownerId, questionnaireId=questionnaireId).first()
         if not q:
-            raise NoQuestionnire
+            raise NoQuestionnaire
         keys = form.jsonKeys
         for info in keys:
-            q[info] = form[info].data
+            # 防止传入null时值被重置
+            if form[info].data is not None:
+                q[info] = form[info].data
         q.save()
 
     @staticmethod
-    def getConditions(questionnireId):
-        q = Questionnaire.objects.filter(questionnireId=questionnireId).first()
+    def getConditions(questionnaireId, isAdmin):
+        q = Questionnaire.objects.filter(questionnaireId=questionnaireId).first()
         if not q:
-            raise NoQuestionnire
+            raise NoQuestionnaire
         if checkTimeIsDead(q):
             q.makeItDead()
-        return q.getConditionJson()
+        return q.getConditionJson(isAdmin=isAdmin)
 
     @staticmethod
-    def checkSecretKey(questionnireId, key):
-        q = Questionnaire.objects.filter(questionnireId=questionnireId).first()
-        if not q:
-            raise NoQuestionnire
-        q = Questionnaire.objects.filter(secretKey=key).first()
-        if not q:
-            raise WrongProblemSecretKey
-
-    @staticmethod
-    def getQuestionnire(ownerId, questionnireId):
+    def checkSecretKey(questionnaireId, key):
         from app.models.problem import Problem
-        q = Questionnaire.objects.filter(ownerId=ownerId, questionnireId=questionnireId).first()
+        q = Questionnaire.objects.filter(questionnaireId=questionnaireId).first()
         if not q:
-            raise NoQuestionnire
+            raise NoQuestionnaire
+        if q.secretKey != key and q.isSecret:
+            raise WrongProblemSecretKey
         return {
-            "basicInfo": q.getConditionJson(),
-            "problems": Problem.getProblems(questionnireId)
+            "basicInfo": q.getConditionJson(isAdmin=False),
+            "problems": Problem.getProblems(questionnaireId)
+        }
+
+    @staticmethod
+    def getQuestionnaire(ownerId, questionnaireId, isAdmin):
+        from app.models.problem import Problem
+        q = Questionnaire.objects.filter(ownerId=ownerId, questionnaireId=questionnaireId).first()
+        if not q:
+            raise NoQuestionnaire
+        return {
+            "basicInfo": q.getConditionJson(isAdmin=isAdmin),
+            "problems": Problem.getProblems(questionnaireId)
+        }
+
+    def getQuestionniareQRCode(self):
+        code = QRcode(str(self.questionnaireId))
+        return code.showQRImg()
+
+    def downloadQuestionnaireQRCode(self):
+        code = QRcode(str(self.questionnaireId))
+        return code.downloadQRImg()
+
+    @staticmethod
+    def getAllQuestionnaire(ownerId):
+        qs = Questionnaire.objects.filter(ownerId=ownerId)
+        if not qs:
+            raise NoQuestionnaire
+        res = []
+        for q in qs:
+            res.append(q.getConditionJson(isAdmin=False))
+        return res
+
+    @staticmethod
+    def getAnalysisData(qid):
+        from app.models.problem import Problem
+        # 拿到所有problems
+        resolutions = []
+        problems = Problem.objects.filter(targetQuestionnaireId=qid)
+        for p in problems:
+            res = p.getResolution()
+            resolutions.append(res)
+        return {
+            "data": resolutions
         }
