@@ -38,23 +38,12 @@ def pushWJWDataToDB():
             try:
                 qid = getUniqueId()
                 p = WJWSpider(url=currentLink).runSpider()
-                Questionnaire(
-                    ownerId=templateUserId,
-                    questionnaireId=qid,
-                    title=p.getTitle(),
-                    subTitle=p.getSubTitle()
-                ).save()
+                Questionnaire.createByTemplates(templateUserId, qid, p.getTitle(), p.getSubTitle())
                 problems = p.getProblems()
                 for p in problems:
                     res = WJWProblem(p)
-                    Problem(
-                        title=res.getProblemTitle(),
-                        type=res.checkProblemType(),
-                        options=res.getProblemOptions(),
-                        problemId=getUniqueId(),
-                        targetQuestionnaireId=qid,
-                        ownerId=templateUserId
-                    ).save()
+                    Problem.createByTemplates(res.getProblemTitle(), res.checkProblemType(), res.getProblemOptions(),
+                                              getUniqueId(), templateUserId, qid)
                 successNum += 1
             except Exception as e:
                 current_app.logger.info(e)

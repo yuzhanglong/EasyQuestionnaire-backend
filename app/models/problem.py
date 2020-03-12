@@ -143,13 +143,12 @@ class Problem(db.Document):
         return problems
 
     @staticmethod
-    def saveFromTemplates(problems):
-        for p in problems:
-            Problem(
-                title=p['title'],
-                type=p['type'],
-                options=p['options'],
-                problemId=p['problemId'],
-                ownerId=p['ownerId'],
-                targetQuestionnaireId=p['targetQuestionnaireId']
-            ).save()
+    def createByTemplates(title, ptype, opt, pid, ownerId, tqid):
+        Problem(
+            title=title,
+            type=ptype,
+            options=opt,
+            problemId=pid,
+            ownerId=ownerId,
+            targetQuestionnaireId=tqid
+        ).save()

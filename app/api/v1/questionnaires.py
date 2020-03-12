@@ -90,7 +90,8 @@ def getQuestionnaire(qid):
 def getAllQuestionnaire():
     userId = g.userInfo.userId
     res = Questionnaire.getAllQuestionnaire(ownerId=userId)
-    return Success(information="获取用户问卷数据成功", payload={"questionnaires": res})
+    tlen = Questionnaire.getTemplatesAmount()
+    return Success(information="获取用户问卷数据成功", payload={"questionnaires": res, "tAmount": tlen})
 
 
 # 这个接口拿到的问卷condition含有密码 供编辑使用
@@ -108,9 +109,11 @@ def getTemplates():
     data = Questionnaire.getTemplatesBasicInfo(int(form.page.data))
     return Success(information='获取问卷模板成功', payload={"data": data})
 
+
 @questionnaires.route('/copy_templates', methods=['POST'])
 @auth.login_required
 def copyTemplates():
+    userId = g.userInfo.userId
     form = CopyTemplatesForm().validateForApi()
-
-
+    Questionnaire.copyTemplates(qid=form.templateId.data, uid=userId)
+    return Success(information='更新成功')

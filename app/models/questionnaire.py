@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from app.api.error.exceptions import NoQuestionnaire, WrongProblemSecretKey, ParameterException
+from app.api.error.exceptions import NoQuestionnaire, WrongProblemSecretKey, ParameterException, NoProblem
 from app.extensions import db
 from app.utils.qrCode import QRcode
 from app.utils.timeHelper.timeHelper import getUniqueId, checkTimeIsDead
@@ -193,5 +193,33 @@ class Questionnaire(db.Document):
         return templateList
 
     @staticmethod
-    def copyTemplates(qid):
-        pass
+    def getTemplatesAmount():
+        from app.models.user import User
+        tuid = User.getTemplateUserId()
+        return len(Questionnaire.objects.filter(ownerId=tuid))
+
+    @staticmethod
+    def copyTemplates(qid, uid):
+        from app.models.user import User
+        from app.models.problem import Problem
+        templateUserId = User.getTemplateUserId()
+        # 获得目标模板
+        newqid = getUniqueId()
+        q = Questionnaire.objects.filter(questionnaireId=qid, ownerId=templateUserId).first()
+        if not q:
+            raise NoQuestionnaire
+        Questionnaire.createByTemplates(uid, newqid, q.title, q.subTitle)
+        ps = Problem.objects.filter(targetQuestionnaireId=qid)
+        if not ps:
+            raise NoProblem
+        for p in ps:
+            Problem.createByTemplates(p.title, p.type, p.options, getUniqueId(), uid, newqid)
+
+    @staticmethod
+    def createByTemplates(uid, qid, title, subTitle):
+        Questionnaire(
+            ownerId=uid,
+            questionnaireId=qid,
+            title=title,
+            subTitle=subTitle
+        ).save()
