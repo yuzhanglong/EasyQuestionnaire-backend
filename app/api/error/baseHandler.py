@@ -16,7 +16,4 @@ def handleCommonException(error):
         information = error.description
         return JobException(code=code, information=information)
     else:
-        if not current_app.config['DEBUG']:
-            return JobException()
-        else:
-            raise error
+        raise error

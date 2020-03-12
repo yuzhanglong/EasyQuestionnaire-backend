@@ -30,3 +30,4 @@ def configExtensions(app):
     mail.init_app(app)
     CORS(app)
     schedule.init_app(app)
+    schedule.start()

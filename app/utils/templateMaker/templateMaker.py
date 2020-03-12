@@ -1,7 +1,3 @@
-from app.models.problem import Problem
-from app.models.user import User
-from app.models.questionnaire import Questionnaire
-from app.models.basicInfo import BasicInfo
 import time
 from app.utils.emailtools import sendEmail
 from app.extensions import db
@@ -12,6 +8,10 @@ from app.utils.timeHelper.timeHelper import getUniqueId
 
 
 def pushWJWDataToDB():
+    from app.models.problem import Problem
+    from app.models.user import User
+    from app.models.questionnaire import Questionnaire
+    from app.models.basicInfo import BasicInfo
     with db.app.app_context():
         # 计数器
         count = 0

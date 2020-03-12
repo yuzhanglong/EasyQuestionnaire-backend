@@ -1,11 +1,11 @@
 import random
 from app.models.user import User
 from app.models.basicInfo import BasicInfo
-from app.config.baseConfig import developmentConfig
+from app.config.baseConfig import Config
 
 
 def initDataBase():
-    createTemplatesUser(developmentConfig.TEMPALTES_MANAGER)
+    createTemplatesUser(Config.TEMPALTES_MANAGER)
     createBasicInfo()
 
 

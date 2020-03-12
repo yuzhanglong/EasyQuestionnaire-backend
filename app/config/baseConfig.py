@@ -1,6 +1,7 @@
 # @Time    : 2020/3/7 13:32
 # @Author  : yuzhanglong
 # @Email   : yuzl1123@163.com
+from app.utils.templateMaker.templateMaker import pushWJWDataToDB
 
 
 class Config:
@@ -24,8 +25,8 @@ class Config:
     # 管理员邮箱(自行设定，用来发送一些任务完成信息 例如爬虫任务)
     ADMIN_EMAIL = "yuzl1123@163.com"
 
-    # 模板管理用户(该用户下的所有问卷都是模板 便于管理 如果不存在会在第一次调用模板时自动创建一个)
-    TEMPALTES_MANAGER = "templateMaker"
+    # 模板管理用户(该用户下的所有问卷都是模板 便于管理 如果不存在会自动创建一个)
+    TEMPALTES_MANAGER = "TEMPLATE_MAKER"
 
 
 class developmentConfig(Config):
@@ -34,6 +35,8 @@ class developmentConfig(Config):
         'db': 'questionnaire-test-new',
         'host': 'mongodb://localhost/questionnaire-test-new'
     }
+
+    # 开发环境下web端的url
     WEB_BASE_URL = "http://192.168.0.129:8080"
 
 
@@ -43,13 +46,19 @@ class productionConfig(Config):
         'db': 'questionnaire',
         'host': 'mongodb://localhost/questionnaire'
     }
+
+    # 生产环境下web端的url
     WEB_BASE_URL = "http://wenjuan.yuzzl.top"
 
     # 定时任务
     SCHEDULER_API_ENABLED = True
 
-
-config = {
-    'development': developmentConfig,
-    'production': productionConfig
-}
+    JOBS = [
+        {
+            "id": "runTask",  # 任务ID
+            "func": pushWJWDataToDB,  # 任务位置
+            "trigger": "cron",  # 触发器
+            "hour": '16',  # 时间
+            "minute": '38'
+        }
+    ]
