@@ -1,12 +1,14 @@
 from app.models.problem import Problem
 from app.models.user import User
-from app.utils.templateMaker.spiders.wenjuanwang import makeQuestionnaireStructFromWJW, getLinks
 from app.models.questionnaire import Questionnaire
 from app.models.basicInfo import BasicInfo
 import time
 from app.utils.emailtools import sendEmail
 from app.extensions import db
 from flask import current_app
+
+from app.utils.templateMaker.spiders.wenjuanwang import WJWSpider, WJWProblem
+from app.utils.timeHelper.timeHelper import getUniqueId
 
 
 def pushWJWDataToDB():
@@ -19,7 +21,7 @@ def pushWJWDataToDB():
         templateUserId = User.getTemplateUserId()
         info = BasicInfo.objects.first()
 
-        myList = getLinks(5)
+        myList = WJWSpider.getLinks(5)
 
         # 获得当前网站下已经爬到的最新链接
         newestLink = info.getNewestLink(0)
@@ -34,9 +36,25 @@ def pushWJWDataToDB():
 
             # 防止由于网站原因拿不到部分数据 如果异常则加载下一份问卷
             try:
-                p = makeQuestionnaireStructFromWJW(currentLink, templateUserId)
-                Questionnaire.saveFromTemplates(p["questionniare"])
-                Problem.saveFromTemplates(p['problems'])
+                qid = getUniqueId()
+                p = WJWSpider(url=currentLink).runSpider()
+                Questionnaire(
+                    ownerId=templateUserId,
+                    questionnaireId=qid,
+                    title=p.getTitle(),
+                    subTitle=p.getSubTitle()
+                ).save()
+                problems = p.getProblems()
+                for p in problems:
+                    res = WJWProblem(p)
+                    Problem(
+                        title=res.getProblemTitle(),
+                        type=res.checkProblemType(),
+                        options=res.getProblemOptions(),
+                        problemId=getUniqueId(),
+                        targetQuestionnaireId=qid,
+                        ownerId=templateUserId
+                    ).save()
                 successNum += 1
             except Exception as e:
                 current_app.logger.info(e)

@@ -1,118 +1,79 @@
 # 问卷网爬虫
 from bs4 import BeautifulSoup
 import requests
-import time
 import re
-
+from app.utils.templateMaker.spiders.spider import Spider
 from app.utils.timeHelper.timeHelper import getUniqueId
 
 
-class WJWSpider:
-    def __init__(self, url):
-        htmlData = requests.get(url).text
-        self.soup = BeautifulSoup(htmlData, 'html.parser')
+class WJWSpider(Spider):
 
-    def getQuestionnireBasicInfo(self):
-        title = self.soup.find(class_="answer-title one-line-ellipsis").text
-        subTitle = self.soup.find(class_="answer-welcome").text
-        return {
-            "title": title,
-            "subTitle": subTitle
-        }
+    def getProblems(self):
+        return self.getAllElementByClassName('question-content')
 
-    def getProblemTypes(self):
-        types = []
-        data = self.soup.find_all(class_="question-option")
-        for myType in data:
-            # 筛出单选题
-            targetArray = myType.find_all(class_="rect-icon cycle-radius")
-            targetLableText = myType.find_all("lable")[0].text
-            if len(targetArray) != 0:
-                types.append("singleSelect")
-            else:
-                # 一条横线 是填空题
-                if checkFormat(targetLableText):
-                    types.append("blankFill")
-                else:
-                    types.append("multiplySelect")
-        return types
+    def getTitle(self):
+        return self.getElementByClassName('answer-title one-line-ellipsis')
 
-    def getProblemTitles(self):
-        titles = []
-        data = self.soup.find_all(class_="question-title")
-        for title in data:
-            t = title.text
-            titles.append(t)
-        return titles
+    def getSubTitle(self):
+        return self.getElementByClassName('answer-welcome')
+
+    @staticmethod
+    def getLinks(times):
+        # 可以自定义range大小 可以开定时任务挂服务器
+        linkList = []
+        for i in range(1, times):
+            targetLink = "https://www.wenjuan.com/lib/recommend/?keywords=&scene=0&label=0" \
+                         "&industry_sector=0&page={}".format(i)
+            htmlData = requests.get(targetLink).text
+            soup = BeautifulSoup(htmlData, 'html.parser')
+            links = soup.find_all("a", href=re.compile("/lib_detail_full/"))
+            cnt = 0
+            for link in links:
+                if cnt == 30:
+                    break
+                totLink = "https://www.wenjuan.com" + str(link['href'])
+                linkList.append(totLink)
+                cnt += 1
+        return linkList
+
+
+class WJWProblem:
+    def __init__(self, htmlText):
+        self.problemSoup = BeautifulSoup(str(htmlText), "html5lib")
+
+    def getProblemTitle(self):
+        return self.problemSoup.find(class_="question-title").text
 
     def getProblemOptions(self):
-        problemStore = []
-        data = self.soup.find_all(class_="question-option")
-        for problem in data:
-            resOptions = []
-            options = problem.find_all("lable")
-            for option in options:
-                tick = int(round(time.time() * 1000))
-                opt = {
-                    "optionId": tick,
-                    "value": option.text
-                }
-                resOptions.append(opt)
-            problemStore.append(resOptions)
-        return problemStore
+        publishOption = []
+        options = self.problemSoup.find_all('lable')
+        for o in options:
+            publishOption.append({
+                "optionId": getUniqueId(),
+                "title": o.text
+            })
+        return publishOption
 
+    def checkProblemType(self):
+        single = self.problemSoup.find_all(class_='rect-icon cycle-radius')
+        if len(single):
+            return "SINGLE_SELECT"
+        multiply = self.problemSoup.find_all(class_='rect-icon')
+        if len(multiply):
+            return "MULTIPLY_SELECT"
+        label = self.problemSoup.find('lable').text
+        if self.checkBlankFillFormat(label):
+            return "BLANK_FILL"
+        if self.checkScoreFormat(label):
+            return "SCORE"
+        return "UNKNOWN"
 
-def makeQuestionnaireStructFromWJW(link, ownerId):
-    form = WJWSpider(link)
-    basicInfo = form.getQuestionnireBasicInfo()
-    qid = getUniqueId()
-    questionniare = {
-        "ownerId": ownerId,
-        "questionnaireId": qid,
-        "title": basicInfo['title'],
-        "subTitle": basicInfo['subTitle']
-    }
-    problems = []
-    problemTitles = form.getProblemTitles()
-    problemTypes = form.getProblemTypes()
-    opt = form.getProblemOptions()
-    for index, title in enumerate(problemTitles):
-        problem = {
-            "title": title,
-            "type": problemTypes[index],
-            "options": opt[index],
-            "isRequire": False,
-            "problemId": getUniqueId(),
-            "ownerId": ownerId,
-            "targetQuestionnaireId": qid
-        }
-        problems.append(problem)
-    return {
-        "questionniare": questionniare,
-        "problems": problems
-    }
+    @staticmethod
+    def checkBlankFillFormat(info):
+        pattern = ".*____.*"
+        p = re.match(pattern, info, flags=0)
+        return p is not None
 
-
-def getLinks(times):
-    # 可以自定义range大小 可以开定时任务挂服务器
-    linkList = []
-    for i in range(1, times):
-        targetLink = "https://www.wenjuan.com/lib/recommend/?keywords=&scene=0&label=0&industry_sector=0&page={}".format(
-            i)
-        htmlData = requests.get(targetLink).text
-        soup = BeautifulSoup(htmlData, 'html.parser')
-        links = soup.find_all("a", href=re.compile("/lib_detail_full/"))
-        cnt = 0
-        for link in links:
-            if cnt == 30:
-                break
-            totLink = "https://www.wenjuan.com" + str(link['href'])
-            linkList.append(totLink)
-            cnt += 1
-    return linkList
-
-
-def checkFormat(info):
-    pattern = ".*____.*"
-    p = re.match(pattern, info, flags=0)
-    return p is not None
+    @staticmethod
+    def checkScoreFormat(info):
+        return '★' in info

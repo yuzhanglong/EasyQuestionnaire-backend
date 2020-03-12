@@ -13,7 +13,7 @@ class Spider:
         self.soup = None
         self.response = None
 
-    def runSpider(self, method='get', data=None, needSoup=True):
+    def runSpider(self, method='get', data=None, needSoup=True, manager='html5lib'):
         try:
             if method is 'get':
                 self.response = requests.get(url=self.url, headers=self.headers)
@@ -25,7 +25,8 @@ class Spider:
 
         if needSoup:
             htmlData = self.response.text
-            self.soup = BeautifulSoup(htmlData, 'html.parser')
+            self.soup = BeautifulSoup(htmlData, manager)
+        return self
 
     def getElementByClassName(self, className):
         return self.soup.find(class_=className).text

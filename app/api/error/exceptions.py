@@ -34,6 +34,7 @@ class WrongAuth(JobException):
 class ParameterException(JobException):
     code = 403
     status = "validate error"
+    information = "验证失败"
 
 
 class NoQuestionnaire(JobException):

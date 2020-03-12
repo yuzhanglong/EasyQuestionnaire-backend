@@ -9,9 +9,8 @@ from app.models.questionnaire import Questionnaire
 from app.utils.auth.auth import auth
 from app.utils.betterPrint.betterPrint import BetterPrint
 from flask import g
-
 from app.validators.forms import ProblemForm, DeleteProblemForm, DeleteQuestionnaireForm, QuestionnaireForm, \
-    EditProblemForm
+    EditProblemForm, GetTemplatesForm, CopyTemplatesForm
 
 questionnaires = BetterPrint("questionnaires")
 
@@ -100,3 +99,18 @@ def getAllQuestionnaire():
 def getCondition(qid):
     r = Questionnaire.getConditions(questionnaireId=qid, isAdmin=True)
     return Success(information="获取问卷状态成功", payload=r)
+
+
+@questionnaires.route('/get_templates', methods=['GET'])
+@auth.login_required
+def getTemplates():
+    form = GetTemplatesForm().validateForApi()
+    data = Questionnaire.getTemplatesBasicInfo(int(form.page.data))
+    return Success(information='获取问卷模板成功', payload={"data": data})
+
+@questionnaires.route('/copy_templates', methods=['POST'])
+@auth.login_required
+def copyTemplates():
+    form = CopyTemplatesForm().validateForApi()
+
+

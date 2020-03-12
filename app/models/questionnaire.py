@@ -5,7 +5,7 @@
 
 from datetime import datetime
 
-from app.api.error.exceptions import NoQuestionnaire, WrongProblemSecretKey
+from app.api.error.exceptions import NoQuestionnaire, WrongProblemSecretKey, ParameterException
 from app.extensions import db
 from app.utils.qrCode import QRcode
 from app.utils.timeHelper.timeHelper import getUniqueId, checkTimeIsDead
@@ -175,10 +175,23 @@ class Questionnaire(db.Document):
         }
 
     @staticmethod
-    def saveFromTemplates(myMap):
-        Questionnaire(
-            ownerId=myMap['ownerId'],
-            questionnaireId=myMap['questionnaireId'],
-            title=myMap['title'],
-            subTitle=myMap['subTitle']
-        ).save()
+    def getTemplatesBasicInfo(page):
+        from app.models.user import User
+        if not page:
+            raise ParameterException
+        tuid = User.getTemplateUserId()
+        beginIndex = (page - 1) * 10
+        ts = Questionnaire.objects.filter(ownerId=tuid)[beginIndex: beginIndex + 10]
+        templateList = []
+        for t in ts:
+            templateList.append({
+                "title": t.title,
+                "renewTime": t.renewTime,
+                "info": t.subTitle,
+                "id": t.questionnaireId
+            })
+        return templateList
+
+    @staticmethod
+    def copyTemplates(qid):
+        pass

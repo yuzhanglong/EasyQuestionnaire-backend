@@ -1,5 +1,5 @@
 from wtforms import StringField, BooleanField, DateTimeField, IntegerField
-from app.api.error.exceptions import SameUser
+from app.api.error.exceptions import SameUser, ParameterException
 from app.models.user import User
 from app.validators.base import BaseForm
 from wtforms.validators import DataRequired
@@ -68,3 +68,18 @@ class QuestionireSecretCheckForm(BaseForm):
 
 class QuestionnaireCompleteForm(BaseForm):
     pass
+
+
+class GetTemplatesForm(BaseForm):
+    page = IntegerField(validators=[DataRequired(message="页码不得为空")])
+
+    @staticmethod
+    def validate_page(form, field):
+        try:
+            page = int(field.data)
+        except:
+            raise ParameterException
+
+
+class CopyTemplatesForm(BaseForm):
+    templateId = IntegerField(validators=[DataRequired(message="id不得为空")])
