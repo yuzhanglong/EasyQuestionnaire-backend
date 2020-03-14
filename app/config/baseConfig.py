@@ -11,6 +11,7 @@ class Config:
     # jsonify配置
     JSON_AS_ASCII = False
 
+    # token过期时间
     TOKEN_EXPIRATION = 7200
 
     # 邮件配置
@@ -25,11 +26,16 @@ class Config:
     # 管理员邮箱(自行设定，用来发送一些任务完成信息 例如爬虫任务)
     ADMIN_EMAIL = "yuzl1123@163.com"
 
-    # 模板管理用户(该用户下的所有问卷都是模板 便于管理 如果不存在会自动创建一个)
+    # 模板管理用户的用户名(该用户下的所有问卷都是模板 便于管理 如果不存在会自动创建一个)
     TEMPALTES_MANAGER = "TEMPLATE_MAKER"
 
+    # 微信小程序相关
+    # APP_ID
+    MINI_PROGRAM_APPID = "这里填写微信小程序appid"
+    MINI_PROGRAM_APPSECRET = "这里填写小程序appsecret"
 
-class developmentConfig(Config):
+
+class DevelopmentConfig(Config):
     # mongodb 配置
     MONGODB_SETTINGS = {
         'db': 'questionnaire-test-new',
@@ -40,7 +46,7 @@ class developmentConfig(Config):
     WEB_BASE_URL = "http://192.168.0.129:8080"
 
 
-class productionConfig(Config):
+class ProductionConfig(Config):
     # mongodb 配置
     MONGODB_SETTINGS = {
         'db': 'questionnaire',
@@ -50,9 +56,8 @@ class productionConfig(Config):
     # 生产环境下web端的url
     WEB_BASE_URL = "http://wenjuan.yuzzl.top"
 
-    # 定时任务
+    # 定时任务相关
     SCHEDULER_API_ENABLED = True
-
     JOBS = [
         {
             "id": "runTask",  # 任务ID

@@ -59,3 +59,15 @@ class SameIp(JobException):
     code = 403
     status = "error"
     information = "当前ip已经填写过问卷 请不要重复填写"
+
+
+class WrongType(JobException):
+    code = 403
+    status = "error"
+    information = "客户端类型错误"
+
+
+class WrongCode(JobException):
+    code = 403
+    status = "error"
+    information = "用户code不正确"

@@ -1,5 +1,5 @@
 from flask import Flask
-from app.config.baseConfig import productionConfig, developmentConfig
+from app.config.baseConfig import ProductionConfig, DevelopmentConfig
 from app.api import configBlueprint
 from app.config.database import initDataBase
 from app.extensions import configExtensions
@@ -11,7 +11,7 @@ def createApp():
     app = Flask(__name__)
 
     # 加载app配置
-    app.config.from_object(developmentConfig)
+    app.config.from_object(DevelopmentConfig)
 
     # 配置蓝本
     configBlueprint(app)

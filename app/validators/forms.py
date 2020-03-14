@@ -1,18 +1,33 @@
 from wtforms import StringField, BooleanField, DateTimeField, IntegerField
-from app.api.error.exceptions import SameUser, ParameterException
+from app.api.error.exceptions import SameUser, ParameterException, WrongType
+from app.config.enums import UserTypeEnum
 from app.models.user import User
 from app.validators.base import BaseForm
 from wtforms.validators import DataRequired
 
 
-# 用户表单
+# 用户表单(web)
 class UserForm(BaseForm):
     userName = StringField(validators=[DataRequired(message="用户名不得为空")])
-    password = StringField(validators=[DataRequired(message="密码不得为空")])
+    secret = StringField(validators=[DataRequired(message="密码不得为空")])
+    type = IntegerField(validators=[DataRequired(message="客户端类型不得为空")])
+
+    def validate_type(self, field):
+        try:
+            userType = UserTypeEnum(field.data)
+        except:
+            raise WrongType
+        self.type.data = userType
 
 
-# 注册表单
-class RegisterForm(UserForm):
+# 用户登录表单(小程序)
+class MiniProgramLoginForm(UserForm):
+    userName = StringField(validators=[DataRequired(message="用户名不得为空")])
+    secret = StringField(validators=[DataRequired(message="code不得为空")])
+
+
+# 注册表单(web端)
+class WebRegisterForm(UserForm):
     # 检测相同用户的存在
     @staticmethod
     def validate_userName(form, field):
