@@ -118,3 +118,12 @@ def copyTemplates():
     form = CopyTemplatesForm().validateForApi()
     Questionnaire.copyTemplates(qid=form.templateId.data, uid=userId)
     return Success(information='更新成功')
+
+
+# 通过问题id来获得一个问题
+@questionnaires.route('/get_problem/<int:problemId>', methods=['GET'])
+@auth.login_required
+def getProblemByPid(problemId):
+    userId = g.userInfo.userId
+    res = Problem.getOneProblemByPid(pid=problemId, oid=userId)
+    return Success(information='更新成功', payload=res)

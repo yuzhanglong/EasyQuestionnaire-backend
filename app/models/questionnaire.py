@@ -144,8 +144,6 @@ class Questionnaire(db.Document):
     @staticmethod
     def getAllQuestionnaire(ownerId):
         qs = Questionnaire.objects.filter(ownerId=ownerId)
-        if not qs:
-            raise NoQuestionnaire
         res = []
         for q in qs:
             res.append(q.getConditionJson(isAdmin=False))

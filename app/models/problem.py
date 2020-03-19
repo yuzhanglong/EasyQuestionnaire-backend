@@ -152,3 +152,10 @@ class Problem(db.Document):
             ownerId=ownerId,
             targetQuestionnaireId=tqid
         ).save()
+
+    @staticmethod
+    def getOneProblemByPid(pid, oid):
+        p = Problem.objects.filter(problemId=pid, ownerId=oid).first()
+        if not p:
+            raise NoProblem
+        return p.getProblemJson()

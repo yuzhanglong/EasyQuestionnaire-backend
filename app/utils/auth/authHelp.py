@@ -2,6 +2,8 @@ from collections import namedtuple
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from itsdangerous import BadSignature, SignatureExpired
+
+from app.api.error.errorCode import AUTH_NULL, AUTH_ERROR, AUTH_EXPIRED
 from app.api.error.exceptions import WrongAuth
 
 # scope 作用域
@@ -22,14 +24,16 @@ def generateAuthToken(userId, clientType=None, scope=None):
 
 # 鉴别token
 def checkAuthToken(token):
+    if not token:
+        raise WrongAuth(errorCode=AUTH_NULL)
     serializer = Serializer(current_app.config["SECRET_KEY"])
     try:
         # 把token解码
         data = serializer.loads(token)
     except BadSignature:
-        raise WrongAuth
+        raise WrongAuth(errorCode=AUTH_ERROR)
     except SignatureExpired:
-        raise WrongAuth
+        raise WrongAuth(errorCode=AUTH_EXPIRED)
     userId = data['userId']
     clientType = data['clientType']
     scope = data['scope']

@@ -4,15 +4,15 @@ from flask import json
 
 class JobException(HTTPException):
     code = 404
-    status = "error"
+    errorCode = 2000
     information = "未知错误"
 
-    def __init__(self, code=None, status=None, information=None, payload=None):
+    def __init__(self, code=None, errorCode=None, information=None, payload=None):
         Exception.__init__(self)
         if code:
             self.code = code
-        if status:
-            self.status = status
+        if errorCode:
+            self.errorCode = errorCode
         if information:
             self.information = information
         self.payload = payload
@@ -21,7 +21,8 @@ class JobException(HTTPException):
     # 重写getbody方法
     def get_body(self, environ=None):
         body = dict(self.payload or ())
-        body['status'] = self.status
+        if self.errorCode is not 1:
+            body['errorCode'] = self.errorCode
         body['information'] = self.information
         text = json.dumps(body)
         return text
@@ -33,4 +34,4 @@ class JobException(HTTPException):
 # success
 class Success(JobException):
     code = 200
-    status = "success"
+    errorCode = 1
