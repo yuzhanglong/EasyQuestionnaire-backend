@@ -67,7 +67,7 @@ class Problem(db.Document):
             for r in res:
                 if len(r.resolution) is 0:
                     continue
-                pos = r.resolution[0]
+                pos = int(r.resolution[0])
                 if 'resolution' not in optionRes[pos]:
                     optionRes[pos]['resolution'] = 1
                 else:
@@ -80,6 +80,7 @@ class Problem(db.Document):
                 if len(r.resolution) is 0:
                     continue
                 for pos in r.resolution:
+                    pos = int(pos)
                     if 'resolution' not in optionRes[pos]:
                         optionRes[pos]['resolution'] = 1
                     else:
