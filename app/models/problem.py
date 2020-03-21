@@ -106,7 +106,8 @@ class Problem(db.Document):
             "title": self.title,
             # 问题统计数组
             "resolution": optionRes,
-            "type": self.type
+            "type": self.type,
+            "problemId": self.problemId
         }
 
     @staticmethod

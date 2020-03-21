@@ -14,5 +14,7 @@ class BaseForm(Form):
     def validateForApi(self):
         validate = super(BaseForm, self).validate()
         if not validate:
-            raise ParameterException(information=self.errors)
+            # 取第一眼验证错误的错误信息
+            error = list(self.errors.values())[0][0]
+            raise ParameterException(information=error)
         return self

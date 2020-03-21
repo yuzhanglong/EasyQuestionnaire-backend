@@ -21,8 +21,7 @@ class JobException(HTTPException):
     # 重写getbody方法
     def get_body(self, environ=None):
         body = dict(self.payload or ())
-        if self.errorCode is not 1:
-            body['errorCode'] = self.errorCode
+        body['errorCode'] = self.errorCode
         body['information'] = self.information
         text = json.dumps(body)
         return text
@@ -34,4 +33,4 @@ class JobException(HTTPException):
 # success
 class Success(JobException):
     code = 200
-    errorCode = 1
+    errorCode = 0

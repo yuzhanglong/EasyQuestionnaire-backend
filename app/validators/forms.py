@@ -3,7 +3,7 @@ from app.api.error.exceptions import SameUser, ParameterException, WrongType
 from app.config.enums import UserTypeEnum
 from app.models.user import User
 from app.validators.base import BaseForm
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Length
 
 
 # 用户表单(web)
@@ -42,7 +42,7 @@ class QuestionnaireForm(BaseForm):
     isSecret = BooleanField()
     secretKey = StringField()
     condition = BooleanField()
-    title = StringField()
+    title = StringField(validators=[Length(max=18, min=3, message="问卷标题长度必须大于%(min)d且小于%(max)d")])
     subTitle = StringField()
     wechatControl = BooleanField()
     ipControl = BooleanField()
