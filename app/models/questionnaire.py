@@ -157,6 +157,8 @@ class Questionnaire(db.Document):
         # 拿到所有problems
         resolutions = []
         q = Questionnaire.objects.filter(questionnaireId=qid).first()
+        if not q:
+            raise NoQuestionnaire
         problems = Problem.objects.filter(targetQuestionnaireId=qid)
         completes = Complete.getCompleteAmount(qid)
         for p in problems:
