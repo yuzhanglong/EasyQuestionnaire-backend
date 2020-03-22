@@ -4,10 +4,12 @@
 
 #### API接口文档 https://www.showdoc.cc/EasyQuestionnaire
 
+#### api测试地址 https://yuzzl.top
+
 #### 前端项目请移步：
 
 ##### (web端) https://github.com/yuzhanglong/EasyQuestionnaire-web
-##### (小程序端) 正在做
+##### (小程序端) https://github.com/yuzhanglong/EasyQuestionnaire-MiniProgram
 
 
 
