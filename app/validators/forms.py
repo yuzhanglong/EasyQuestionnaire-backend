@@ -42,7 +42,7 @@ class QuestionnaireForm(BaseForm):
     isSecret = BooleanField()
     secretKey = StringField()
     condition = BooleanField()
-    title = StringField(validators=[Length(max=18, min=3, message="问卷标题长度必须大于%(min)d且小于%(max)d")])
+    title = StringField(validators=[Length(max=18, min=0, message="问卷标题长度必须小于%(max)d")])
     subTitle = StringField()
     wechatControl = BooleanField()
     ipControl = BooleanField()

@@ -12,6 +12,7 @@ Flask-HTTPAuth==3.3.0
 Flask-Mail==0.9.1
 flask-mongoengine==0.9.5
 Flask-WTF==0.14.3
+html5lib==1.0.1
 idna==2.9
 itsdangerous==1.1.0
 Jinja2==2.11.1
@@ -27,5 +28,6 @@ six==1.14.0
 soupsieve==2.0
 tzlocal==2.0.0
 urllib3==1.25.8
+webencodings==0.5.1
 Werkzeug==1.0.0
 WTForms==2.2.1
