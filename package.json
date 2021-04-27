@@ -1,0 +1,51 @@
+{
+  "name": "limerence",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "module": "esm/index.js",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.19.0",
+    "eslint-plugin-import": "latest",
+    "npm-run-all": "^4.1.5",
+    "null": "latest",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.2.3"
+  },
+  "eslintConfig": {
+    "rules": {
+      "no-multiple-empty-lines": 1,
+      "import/no-unresolved": "off",
+      "import/order": "warn"
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:import/errors",
+      "plugin:import/warnings",
+      "plugin:import/typescript"
+    ],
+    "root": true,
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "node": true
+    },
+    "plugins": []
+  },
+  "scripts": {
+    "lint": "eslint --ext .js --ext .jsx --max-warnings 0 ./src",
+    "lib:cjs": "tsc -p tsconfig.json --target ESNext --module commonjs --outDir lib",
+    "lib:esm": "tsc -p tsconfig.json --target ESNext --module ESNext --outDir esm",
+    "build": "run-p lib:*",
+    "clean": "rimraf lib esm"
+  },
+  "files": [
+    "esm",
+    "lib",
+    "src"
+  ]
+}
