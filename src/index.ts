@@ -1,1 +1,3 @@
-console.log('hello world')
+import { createWebHistory } from 'vue-router'
+
+createWebHistory
